@@ -1,0 +1,43 @@
+{
+  "appName": "Waslny",
+
+  "notFoundPage": "Sorry, but the page is not found!",
+  "localizationError": "An error has been occurred",
+
+  "done": "Done",
+  "skip": "Skip",
+  "title1": "Real-time tracking of drivers",
+  "title2": "Trip history",
+  "title3": "Driver review and rating",
+  "description1": "The app allows users to track drivers in real-time with the help of GPS integration",
+  "description2": "The access to such information allows riders to see how much they were charged for a ride, how many riders they’ve done over some period of time, what experience they had, and which destination they’ve traveled to",
+  "description3": "Users, who have had a ride with a driver, should be able to rate their experience and rate the driver",
+
+
+  "loginAsAUser": "Login as a user",
+  "phoneNumber": "Phone",
+  "login": "Login",
+  "dontHaveAccount": "Don't have account? ",
+  "registerNow": "Register Now!",
+
+  "loginNow": "Login Now!",
+  "registerANewUser": "Register a new user",
+  "alreadyHaveAccount": "Already have an account! ",
+  "register": "Register",
+  "username": "Username",
+  "enterYourName": "Please enter your name",
+  "enterYourPhone": "Please enter your phone",
+  "enterValidPhone": "Please enter a valid number",
+
+
+  "opps": "OPPS !",
+  "please_check_your_internet_connection_and_try_again": "Please check your Internet Connection and try again",
+  "try_again": "Try Again",
+  "welcome": "Welcome",
+  "ok": "Ok",
+  "cancel": "Cancel",
+  "something_went_wrong": "Something Went Wrong",
+  "reload_screen": "Reload Screen",
+  "want_to_logout": "Do you want to logout ?",
+  "logout": "Logout"
+}
