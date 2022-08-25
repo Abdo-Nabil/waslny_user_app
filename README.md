@@ -1,4 +1,4 @@
-# waslny_user
+# waslny_user_app
 
 A new Flutter project.
 
