@@ -22,9 +22,22 @@ class AppStrings {
   static const String enterYourName = 'enterYourName';
   static const String enterYourPhone = 'enterYourPhone';
   static const String enterValidPhone = 'enterValidPhone';
+  static const String loading = 'loading';
+  static const String verify = 'verify';
+  static const String phoneNumberVerification = 'phoneNumberVerification';
+  static const String enterTheCodeSent = 'enterTheCodeSent';
+  static const String didntRecieveTheCode = 'didntRecieveTheCode';
+  static const String resend = 'resend';
+  static const String countryCode = '+20';
+  static const String plus20English = '+20';
+  static const String plus20Arabic = '20+';
+  static const String stars = '*********';
+  static const String invalidSMS = 'invalidSMS';
 
   static const notFoundPage = "notFoundPage";
   static const appName = "appName";
+  static const appName_for_recent_app = "Waslny User";
+
   static const onBoardingTitle1 = "on_boarding_title1";
   static const onBoardingTitle2 = "on_boarding_title2";
   static const onBoardingTitle3 = "on_boarding_title3";
@@ -39,7 +52,6 @@ class AppStrings {
   static const passwordError = "password_error";
   static const forgetPassword = "forgot_password_text";
   static const registerText = "register_text";
-  static const loading = "loading";
   static const retryAgain = "retry_again";
   static const String emailHint = 'email_hint';
   static const String invalidEmail = "email_error";

@@ -31,7 +31,14 @@
   "enterYourName": "من فضلك، قم بكتابة اسمك",
   "enterYourPhone": "من فضلك، ادخل رقم هاتفك",
   "enterValidPhone": "من فضلك، ادخل رقم هاتف صالح",
+  "loading": "جاري التحميل",
 
+  "verify": "تحقق",
+  "phoneNumberVerification": "التحقق من رقم الهاتف",
+  "enterTheCodeSent": "ادخل الكود الذي تم ارساله إلى  ",
+  "didntRecieveTheCode": "لم تستقبل الكود ؟",
+  "resend": "إعادة الإرسال",
+  "invalidSMS": "عفوًا الكود غير صالح",
 
   "opps": "عفواً !",
   "please_check_your_internet_connection_and_try_again": "من فضلك أفحص اتصالك بالانترنت ، وأعد المحاولة",

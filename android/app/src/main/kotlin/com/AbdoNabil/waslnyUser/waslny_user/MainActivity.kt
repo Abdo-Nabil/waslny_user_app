@@ -1,4 +1,4 @@
-package com.AbdoNabil.waslnyUser.waslny_user
+package com.AbdoNabil.waslnyUser
 
 import io.flutter.embedding.android.FlutterActivity
 

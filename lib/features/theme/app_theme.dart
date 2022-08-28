@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
+import 'package:waslny_user/resources/colors_manager.dart';
 
 class AppTheme {
   static ThemeData lightTheme(Locale locale, BuildContext context) {
     return ThemeData(
       // fontFamily: locale.languageCode == 'en' ? 'DynaPuff' : 'Amiri',
       colorScheme: const ColorScheme.light().copyWith(
-        secondary: Colors.white,
-        primary: Colors.blue,
-        onSurface: Colors.white,
-        onSecondary: Colors.white,
-        onBackground: Colors.white,
+        secondary: ColorsManager.secondary,
+        primary: ColorsManager.primary,
+        onSurface: ColorsManager.onSurface,
+        onSecondary: ColorsManager.onSecondary,
+        onBackground: ColorsManager.onBackground,
       ),
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.all(AppPadding.p16),
@@ -42,40 +43,43 @@ class AppTheme {
 
   static ThemeData darkTheme(Locale locale, BuildContext context) {
     return ThemeData(
-      // fontFamily: locale.languageCode == 'en' ? 'DynaPuff' : 'Amiri',
-      colorScheme: const ColorScheme.dark().copyWith(
-        primary: Colors.blue,
-        secondary: Colors.blueAccent,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
+        // fontFamily: locale.languageCode == 'en' ? 'DynaPuff' : 'Amiri',
+        colorScheme: const ColorScheme.dark().copyWith(
+          primary: Colors.blue,
+          secondary: Colors.blueAccent,
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
 
-        // onSurface: Colors.white,
-        // onSecondary: Colors.white,
-        // onBackground: Colors.white,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        contentPadding: const EdgeInsets.all(AppPadding.p16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppPadding.p20),
+          // onSurface: Colors.white,
+          // onSecondary: Colors.white,
+          // onBackground: Colors.white,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.white),
-          borderRadius: BorderRadius.circular(AppPadding.p20),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
+        inputDecorationTheme: InputDecorationTheme(
+          contentPadding: const EdgeInsets.all(AppPadding.p16),
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppPadding.p20),
           ),
-          textStyle: const TextStyle().copyWith(
-            fontSize: Theme.of(context).textTheme.headline6!.fontSize,
-            fontWeight: FontWeight.bold,
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(AppPadding.p20),
           ),
-          padding: const EdgeInsets.all(AppPadding.p14),
         ),
-      ),
-    );
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppPadding.p20),
+            ),
+            textStyle: const TextStyle().copyWith(
+              fontSize: Theme.of(context).textTheme.headline6!.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            padding: const EdgeInsets.all(AppPadding.p14),
+          ),
+        ),
+        dialogTheme: DialogTheme(
+            shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppPadding.p20),
+        )));
   }
 }
 //

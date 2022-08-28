@@ -18,9 +18,9 @@
   "phoneNumber": "Phone",
   "login": "Login",
   "dontHaveAccount": "Don't have account? ",
-  "registerNow": "Register Now!",
+  "registerNow": "REGISTER NOW!",
 
-  "loginNow": "Login Now!",
+  "loginNow": "LOGIN NOW!",
   "registerANewUser": "Register a new user",
   "alreadyHaveAccount": "Already have an account! ",
   "register": "Register",
@@ -28,6 +28,16 @@
   "enterYourName": "Please enter your name",
   "enterYourPhone": "Please enter your phone",
   "enterValidPhone": "Please enter a valid number",
+  "loading": "Loading",
+
+  "verify": "Verify",
+  "phoneNumberVerification": "Phone Number Verification",
+  "enterTheCodeSent": "Enter the code sent to ",
+  "didntRecieveTheCode": "Didn't receive the code? ",
+  "resend": "RESEND",
+  "invalidSMS": "Invalid SMS code",
+
+
 
 
   "opps": "OPPS !",

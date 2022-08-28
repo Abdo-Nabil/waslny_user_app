@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/config/routes/app_routes.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/core/util/dialog_helper.dart';
+import 'package:waslny_user/features/authentication/presentation/otp_screen.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/image_with_logo.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/login_or_register_text.dart';
@@ -42,84 +44,103 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     //
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        backgroundColor: ColorsManager.greyBlack,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const ImageWithLogo(),
-              const LoginOrRegisterText(AppStrings.registerANewUser),
-              const AddVerticalSpace(AppPadding.p20),
-              Padding(
-                padding: const EdgeInsets.all(AppPadding.p16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      CustomFormFiled(
-                        context: context,
-                        controller: _nameController,
-                        label: AppStrings.username,
-                        icon: const Icon(
-                          Icons.person,
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is StartLoadingState) {
+          DialogHelper.loadingDialog(context);
+        } else if (state is EndLoadingStateAndNavigate) {
+          Navigator.of(context).pop();
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return OtpScreen(
+                phoneNumber: _phoneController.text,
+              );
+            }),
+          );
+        } else if (state is EndLoadingStateWithError) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: ColorsManager.greyBlack,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const ImageWithLogo(),
+                const LoginOrRegisterText(AppStrings.registerANewUser),
+                const AddVerticalSpace(AppPadding.p20),
+                Padding(
+                  padding: const EdgeInsets.all(AppPadding.p16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        CustomFormFiled(
+                          context: context,
+                          controller: _nameController,
+                          label: AppStrings.username,
+                          icon: const Icon(
+                            Icons.person,
+                          ),
+                          validate: (value) {
+                            return AuthCubit.getIns(context)
+                                .validateUsername(value)
+                                ?.tr(context);
+                          },
                         ),
-                        validate: (value) {
-                          return AuthCubit.getIns(context)
-                              .validateUsername(value)
-                              ?.tr(context);
-                        },
-                      ),
-                      const AddVerticalSpace(AppPadding.p16),
-                      CustomFormFiled(
-                        context: context,
-                        controller: _phoneController,
-                        label: AppStrings.phoneNumber,
-                        icon: Icon(
-                          LocalizationCubit.ins(context).isEnglishLocale()
-                              ? Icons.phone
-                              : Icons.phone_enabled,
+                        const AddVerticalSpace(AppPadding.p16),
+                        CustomFormFiled(
+                          context: context,
+                          controller: _phoneController,
+                          label: AppStrings.phoneNumber,
+                          showPlus20: true,
+                          icon: Icon(
+                            LocalizationCubit.getIns(context).isEnglishLocale()
+                                ? Icons.phone
+                                : Icons.phone_enabled,
+                          ),
+                          isNumberKeyboard: true,
+                          validate: (value) {
+                            return AuthCubit.getIns(context)
+                                .validatePhoneNumberInRegisterMode(value)
+                                ?.tr(context);
+                          },
                         ),
-                        isNumberKeyboard: true,
-                        validate: (value) {
-                          return AuthCubit.getIns(context)
-                              .validateRegisterPhoneNumber(value)
-                              ?.tr(context);
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  return Button(
-                    text: AppStrings.register,
-                    onTap: () async {
-                      await AuthCubit.getIns(context).register(
-                        _formKey,
-                        _nameController,
-                        _phoneController,
-                      );
-                    },
-                  );
-                },
-              ),
-              TextRow(
-                text: AppStrings.alreadyHaveAccount,
-                textButton: AppStrings.loginNow,
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    NoAnimationPageRoute(
-                      builder: (context) {
-                        return const LoginScreen();
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return Button(
+                      text: AppStrings.register,
+                      onTap: () async {
+                        await AuthCubit.getIns(context).register(
+                          _formKey,
+                          _nameController,
+                          _phoneController,
+                        );
                       },
-                    ),
-                  );
-                },
-              )
-            ],
+                    );
+                  },
+                ),
+                TextRow(
+                  text: AppStrings.alreadyHaveAccount,
+                  textButton: AppStrings.loginNow,
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(
+                      NoAnimationPageRoute(
+                        builder: (context) {
+                          return const LoginScreen();
+                        },
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),

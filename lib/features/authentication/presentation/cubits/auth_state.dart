@@ -17,3 +17,38 @@ class ButtonStateDisabled extends AuthState {
   @override
   List<Object?> get props => [];
 }
+
+class StartLoadingState extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingStateAndNavigate extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingStateWithError extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class OtpSentState extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ResendSmsState extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ActiveResendButtonState extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingStateWithSmsError extends AuthState {
+  @override
+  List<Object?> get props => [];
+}

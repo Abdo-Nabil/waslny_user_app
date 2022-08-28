@@ -8,7 +8,7 @@ import 'font_manager.dart';
 TextStyle appNameTextStyle(BuildContext context) {
   return TextStyle(
     fontSize: FontSize.s44,
-    color: ColorsManager.white,
+    color: ColorsManager.whiteColor,
     // fontWeight: fontWeight,
     fontFamily: BlocProvider.of<LocalizationCubit>(context)
                 .selectedLocale
@@ -17,6 +17,13 @@ TextStyle appNameTextStyle(BuildContext context) {
         ? 'DynaPuff'
         : 'Amiri',
   );
+}
+
+TextStyle? plus20textStyle(BuildContext context) {
+  return Theme.of(context)
+      .textTheme
+      .subtitle1
+      ?.copyWith(color: ColorsManager.whiteColor);
 }
 
 TextStyle _getTextStyle(double fontSize, FontWeight fontWeight, Color color) {

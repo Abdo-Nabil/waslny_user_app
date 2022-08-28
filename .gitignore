@@ -10,6 +10,10 @@
 .svn/
 migrate_working_dir/
 
+sensitive/constants/
+sensitive/upload-keystore/
+sensitive/cccc/
+
 # IntelliJ related
 *.iml
 *.ipr

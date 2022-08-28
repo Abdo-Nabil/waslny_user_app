@@ -28,7 +28,7 @@ class LocalizationCubit extends Cubit<LocalizationState> {
 
   late Locale selectedLocale;
 
-  static ins(context) {
+  static LocalizationCubit getIns(context) {
     return BlocProvider.of<LocalizationCubit>(context);
   }
 
