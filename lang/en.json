@@ -36,6 +36,12 @@
   "didntRecieveTheCode": "Didn't receive the code? ",
   "resend": "RESEND",
   "invalidSMS": "Invalid SMS code",
+  "alert": "Alert",
+  "internetConnectionError": "Please, check your internet connection!",
+  "someThingWentWrong": "Sorry, something went wrong!",
+  "ok": "Ok",
+  "emptyValue": "Fields Can't be empty",
+  "enterAllDigits": "Please complete all fields",
 
 
 

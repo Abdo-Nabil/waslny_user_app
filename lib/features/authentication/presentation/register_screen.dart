@@ -30,12 +30,10 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   //
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
   @override
   void dispose() {
-    _phoneController.dispose();
     _nameController.dispose();
     super.dispose();
   }
@@ -49,14 +47,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (state is StartLoadingState) {
           DialogHelper.loadingDialog(context);
         } else if (state is EndLoadingStateAndNavigate) {
-          Navigator.of(context).pop();
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return OtpScreen(
-                phoneNumber: _phoneController.text,
-              );
-            }),
-          );
+          // Navigator.of(context).pop();
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(builder: (context) {
+          //     return OtpScreen(
+          //       phoneNumber: _phoneController.text,
+          //     );
+          //   }),
+          // );
         } else if (state is EndLoadingStateWithError) {
           Navigator.of(context).pop();
         }
@@ -86,28 +84,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           validate: (value) {
                             return AuthCubit.getIns(context)
-                                .validateUsername(value)
+                                .validateUsername(context, value)
                                 ?.tr(context);
                           },
                         ),
                         const AddVerticalSpace(AppPadding.p16),
-                        CustomFormFiled(
-                          context: context,
-                          controller: _phoneController,
-                          label: AppStrings.phoneNumber,
-                          showPlus20: true,
-                          icon: Icon(
-                            LocalizationCubit.getIns(context).isEnglishLocale()
-                                ? Icons.phone
-                                : Icons.phone_enabled,
-                          ),
-                          isNumberKeyboard: true,
-                          validate: (value) {
-                            return AuthCubit.getIns(context)
-                                .validatePhoneNumberInRegisterMode(value)
-                                ?.tr(context);
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -120,25 +101,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         await AuthCubit.getIns(context).register(
                           _formKey,
                           _nameController,
-                          _phoneController,
                         );
                       },
                     );
                   },
                 ),
-                TextRow(
-                  text: AppStrings.alreadyHaveAccount,
-                  textButton: AppStrings.loginNow,
-                  onTap: () {
-                    Navigator.of(context).pushReplacement(
-                      NoAnimationPageRoute(
-                        builder: (context) {
-                          return const LoginScreen();
-                        },
-                      ),
-                    );
-                  },
-                )
               ],
             ),
           ),

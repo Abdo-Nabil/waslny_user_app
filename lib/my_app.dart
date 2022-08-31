@@ -10,6 +10,7 @@ import 'package:waslny_user/resources/app_strings.dart';
 
 import 'config/routes/app_routes.dart';
 import 'core/util/toast_helper.dart';
+import 'features/authentication/presentation/register_screen.dart';
 import 'features/localization/locale/app_localizations_setup.dart';
 import 'features/theme/app_theme.dart';
 import 'injection_container.dart';

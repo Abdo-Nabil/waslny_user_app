@@ -1,3 +1,12 @@
+import 'package:waslny_user/features/authentication/data/datasources/auth_local_data_source.dart';
+import 'package:waslny_user/features/authentication/data/datasources/auth_remote_data_source.dart';
+import 'package:waslny_user/features/authentication/data/repositories/auth_repo_impl.dart';
+import 'package:waslny_user/features/authentication/domain/repositories/auth_repo.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/get_token_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/login_or_resend_sms_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/get_user_data_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/set_token_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/verify_sms_code_use_case.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/localization/data/datasources/localization_local_data_source.dart';
@@ -6,6 +15,7 @@ import 'package:waslny_user/features/localization/domain/usecases/get_locale_use
 import 'package:waslny_user/features/theme/presentation/cubits/theme_cubit.dart';
 
 import 'core/network/network_info.dart';
+import 'features/authentication/domain/usecases/create_user_use_case.dart';
 import 'features/localization/data/repositories/localization_repository_impl.dart';
 import 'features/localization/domain/usecases/set_locale_use_case.dart';
 
@@ -67,9 +77,9 @@ Future<void> initLocalization() async {
 //! Core
 
 //! External
-
-  final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => sharedPreferences);
+//
+//   final sharedPreferences = await SharedPreferences.getInstance();
+//   sl.registerLazySingleton(() => sharedPreferences);
 }
 
 Future<void> initTheme() async {
@@ -134,17 +144,45 @@ Future<void> initializeAuth() async {
 
 //! Bloc
 
-  sl.registerFactory(() => AuthCubit());
+  sl.registerFactory(() => AuthCubit(
+        createUserUseCase: sl(),
+        getUserDataUseCase: sl(),
+        loginOrResendSmsUseCase: sl(),
+        verifySmsCodeUseCase: sl(),
+        getTokenUseCase: sl(),
+        setTokenUseCase: sl(),
+      ));
 
 //! Use Cases
+  sl.registerLazySingleton(() => CreateUserUseCase(authRepo: sl()));
+  sl.registerLazySingleton(() => GetUserDataUseCase(authRepo: sl()));
+  sl.registerLazySingleton(() => LoginOrResendSmsUseCase(authRepo: sl()));
+  sl.registerLazySingleton(() => VerifySmsCodeUseCase(authRepo: sl()));
+  sl.registerLazySingleton(() => GetTokenUseCase(authRepo: sl()));
+  sl.registerLazySingleton(() => SetTokenUseCase(authRepo: sl()));
 
 //! Repository
+  sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(
+        authLocalDataSource: sl(),
+        authRemoteDataSource: sl(),
+        networkInfo: sl(),
+      ));
 
 //! Data Sources
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+      () => AuthRemoteDataSourceImpl());
+  sl.registerLazySingleton<AuthLocalDataSource>(
+      () => AuthLocalDataSourceImpl(sharedPreferences: sl()));
 
 //! Core
 
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+
 //! External
+
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => InternetConnectionChecker());
 }
 
 //-----------------------------------------------------------------

@@ -18,17 +18,7 @@ class ButtonStateDisabled extends AuthState {
   List<Object?> get props => [];
 }
 
-class StartLoadingState extends AuthState {
-  @override
-  List<Object?> get props => [];
-}
-
 class EndLoadingStateAndNavigate extends AuthState {
-  @override
-  List<Object?> get props => [];
-}
-
-class EndLoadingStateWithError extends AuthState {
   @override
   List<Object?> get props => [];
 }
@@ -48,7 +38,41 @@ class ActiveResendButtonState extends AuthState {
   List<Object?> get props => [];
 }
 
+/////////////////////////////
+class StartLoadingState extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingStateWithError extends AuthState {
+  final String msg;
+  EndLoadingStateWithError(this.msg);
+  @override
+  List<Object?> get props => [msg];
+}
+
 class EndLoadingStateWithSmsError extends AuthState {
+  EndLoadingStateWithSmsError();
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingToOtpScreen extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingToRegisterScreen extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class EndLoadingToHomeScreen extends AuthState {
+  @override
+  List<Object?> get props => [];
+}
+
+class SmsListeningException extends AuthState {
   @override
   List<Object?> get props => [];
 }

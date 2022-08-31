@@ -26,3 +26,18 @@ class CacheSavingFailure extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class LoginVerificationFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
+class InternetConnectionFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
+class InvalidSmsFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}

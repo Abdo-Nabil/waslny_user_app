@@ -1,23 +1,44 @@
 import 'package:alt_sms_autofill/alt_sms_autofill.dart';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/get_token_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/login_or_resend_sms_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/set_token_use_case.dart';
+import 'package:waslny_user/features/authentication/domain/usecases/verify_sms_code_use_case.dart';
 import 'package:waslny_user/resources/app_strings.dart';
-import 'package:waslny_user/resources/constants_manager.dart';
+
+import '../../../../core/error/failures.dart';
+import '../../../../resources/constants_manager.dart';
+import '../../domain/usecases/create_user_use_case.dart';
+import '../../domain/usecases/get_user_data_use_case.dart';
+import '../../domain/usecases/verify_sms_code_use_case.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+  final CreateUserUseCase createUserUseCase;
+  final GetUserDataUseCase getUserDataUseCase;
+  final LoginOrResendSmsUseCase loginOrResendSmsUseCase;
+  final VerifySmsCodeUseCase verifySmsCodeUseCase;
+  final GetTokenUseCase getTokenUseCase;
+  final SetTokenUseCase setTokenUseCase;
+
+  AuthCubit({
+    required this.createUserUseCase,
+    required this.getUserDataUseCase,
+    required this.loginOrResendSmsUseCase,
+    required this.verifySmsCodeUseCase,
+    required this.getTokenUseCase,
+    required this.setTokenUseCase,
+  }) : super(AuthInitial());
 
   bool showLoginButton = false;
   bool showResendButton = false;
-  late String verificationIdentity;
-  String? token;
 
   static AuthCubit getIns(context) {
     return BlocProvider.of<AuthCubit>(context);
@@ -49,105 +70,138 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  String? validatePhoneNumberInRegisterMode(String? value) {
+  String? validatePinCodeFields(BuildContext context, String value) {
+    if (value.isEmpty) {
+      return AppStrings.emptyValue.tr(context);
+    } else if (value.length != ConstantsManager.pinCodesLength) {
+      return AppStrings.enterAllDigits.tr(context);
+    } else {
+      return null;
+    }
+  }
+
+  // String? validatePhoneNumberInRegisterMode(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return AppStrings.enterYourPhone;
+  //   } else if (!isValidPhoneNumber(value)) {
+  //     return AppStrings.enterValidPhone;
+  //   }
+  //   return null;
+  // }
+
+  String? validateUsername(BuildContext context, String? value) {
     if (value == null || value.isEmpty) {
-      return AppStrings.enterYourPhone;
-    } else if (!isValidPhoneNumber(value)) {
-      return AppStrings.enterValidPhone;
+      return AppStrings.enterYourName.tr(context);
     }
     return null;
   }
 
-  String? validateUsername(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.enterYourName;
-    }
-    return null;
-  }
-
-  Future login(String phoneNumber) async {
-    emit(StartLoadingState());
-    await Future.delayed(const Duration(seconds: 3));
-    await firebaseLoginWithPhone(phoneNumber);
-    emit(EndLoadingStateAndNavigate());
-  }
-
-  Future resendSms(String phoneNumber) async {
-    emit(StartLoadingState());
-    await Future.delayed(const Duration(seconds: 3));
-    await firebaseLoginWithPhone(phoneNumber);
-    emit(ResendSmsState());
-  }
-
-  Future firebaseLoginWithPhone(String phoneNumber) async {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: AppStrings.countryCode + phoneNumber,
-      timeout: const Duration(seconds: ConstantsManager.smsTimer),
-      //
-      verificationFailed: (FirebaseAuthException e) {
-        if (e.code == 'invalid-phone-number') {
-          debugPrint('The provided phone number is not valid ::::');
-        }
-      },
-      codeSent: (String verificationId, int? resendToken) async {
-        // Update the UI - wait for the user to enter the SMS code
-        verificationIdentity = verificationId;
-        debugPrint(
-            'Code hase been sent to ${AppStrings.countryCode + phoneNumber}');
-        debugPrint('resend token :: $resendToken');
-      },
-      //
-      verificationCompleted: (PhoneAuthCredential credential) {
-        debugPrint('Verification Completed ::  $credential');
-      },
-      //
-      codeAutoRetrievalTimeout: (String verificationId) {
-        debugPrint('Code Auto Retrieval Timeout :: $verificationId');
-      },
-    );
-  }
-
-  Future verifySmsCode(String smsCode) async {
-    emit(StartLoadingState());
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: verificationIdentity,
-      smsCode: smsCode,
-    );
+  Future listenForSms(BuildContext context, GlobalKey<FormState> formKey,
+      TextEditingController otpController, mounted) async {
     try {
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      final bool? isNewUser = userCredential.additionalUserInfo?.isNewUser;
-
-      // if(isNewUser!){
-      //   createUserAccount(UserModel userModel);
-      // }else{
-      //
-      // }
-      final tokennn = await userCredential.user?.getIdToken();
-      debugPrint('LLL 1 :::::: ${userCredential.user?.phoneNumber}');
-      debugPrint('LLL 2 :::::: ${userCredential.user?.uid}');
-      debugPrint('LLL 3 :::::: ${tokennn}');
-      debugPrint(
-          'LLL 4 :::::: ${userCredential.additionalUserInfo?.isNewUser}');
-      // debugPrint('LLL 3 :::::: ${signedUser.user?.');
-      // token = await FirebaseAuth.instance.currentUser?.getIdToken();
-      //
-      // check the user id if found go to home else go to register name screen
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-
-      // //TODO: save the token
-      emit(EndLoadingStateAndNavigate());
+      otpController.text = (await AltSmsAutofill().listenForSms)!;
+      if (!mounted) return;
+      await AuthCubit.getIns(context)
+          .verifySmsCode(otpController.text, formKey);
+      debugPrint('code ${otpController.text}');
     } catch (e) {
-      debugPrint('Error in sign in :: $e');
+      debugPrint('SMS Automatic fetching problem Problem :: $e');
+      emit(SmsListeningException());
+    }
+  }
+
+  ///----------------------------------------------------------\\\
+
+  handleFailure(Failure failure) {
+    if (failure.runtimeType == InternetConnectionFailure) {
+      emit(EndLoadingStateWithError(AppStrings.internetConnectionError));
+    } else if (failure.runtimeType == ServerFailure) {
+      emit(EndLoadingStateWithError(AppStrings.someThingWentWrong));
+    } else if (failure.runtimeType == InvalidSmsFailure) {
       emit(EndLoadingStateWithSmsError());
     }
+  }
+
+  Future loginOrResendSms(String phoneNumber) async {
+    emit(StartLoadingState());
+    debugPrint(phoneNumber);
+    await Future.delayed(const Duration(seconds: 3));
+    final result = await loginOrResendSmsUseCase(phoneNumber);
+    result.fold(
+      (failure) {
+        handleFailure(failure);
+      },
+      (success) {
+        showResendButton = false;
+        emit(EndLoadingToOtpScreen());
+      },
+    );
+  }
+
+  Future saveToken(UserCredential userCredential) async {
+    final token = await userCredential.user?.getIdToken();
+    await setTokenUseCase.call(token!);
+  }
+
+  Future verifySmsCode(String smsCode, GlobalKey<FormState> formKey) async {
+    if (formKey.currentState!.validate()) {
+      emit(StartLoadingState());
+      final result = await verifySmsCodeUseCase(smsCode);
+      result.fold(
+        (failure) {
+          handleFailure(failure);
+        },
+        (userCredential) async {
+          //
+          if (userCredential.additionalUserInfo.isNewUser) {
+            // await createUserAccount();
+
+            await saveToken(userCredential);
+            emit(EndLoadingToRegisterScreen());
+          } else {
+            // getUserData();
+            emit(EndLoadingToHomeScreen());
+          }
+        },
+      );
+    }
+
+    // //TODO: save the token
+
+    // try {
+    //   final UserCredential userCredential =
+    //       await FirebaseAuth.instance.signInWithCredential(credential);
+    //
+    //   final bool? isNewUser = userCredential.additionalUserInfo?.isNewUser;
+    //
+    //   // if(isNewUser!){
+    //   //   createUserAccount(UserModel userModel);
+    //   // }else{
+    //   //
+    //   // }
+    //   final tokennn = await userCredential.user?.getIdToken();
+    //   debugPrint('LLL 1 :::::: ${userCredential.user?.phoneNumber}');
+    //   debugPrint('LLL 2 :::::: ${userCredential.user?.uid}');
+    //   debugPrint('LLL 3 :::::: ${tokennn}');
+    //   debugPrint(
+    //       'LLL 4 :::::: ${userCredential.additionalUserInfo?.isNewUser}');
+    //   // debugPrint('LLL 3 :::::: ${signedUser.user?.');
+    //   // token = await FirebaseAuth.instance.currentUser?.getIdToken();
+    //   //
+    //   // check the user id if found go to home else go to register name screen
+    //   final userId = FirebaseAuth.instance.currentUser?.uid;
+    //
+    //   // //TODO: save the token
+    //   emit(EndLoadingStateAndNavigate());
+    // } catch (e) {
+    //   debugPrint('Error in sign in :: $e');
+    //   emit(EndLoadingStateWithSmsError());
+    // }
   }
 
   Future register(
     GlobalKey<FormState> formKey,
     TextEditingController username,
-    TextEditingController phone,
   ) async {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
@@ -157,7 +211,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (false) {
         emit(EndLoadingStateAndNavigate());
       } else {
-        emit(EndLoadingStateWithError());
+        emit(EndLoadingStateWithError('xxxxxx'));
       }
       // debugPrint('Register Done');
     }

@@ -1,18 +1,20 @@
 import 'package:alt_sms_autofill/alt_sms_autofill.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:waslny_user/core/extensions/context_extension.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/util/no_animation_page_route.dart';
 import 'package:waslny_user/core/util/toast_helper.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
+import 'package:waslny_user/features/authentication/presentation/register_screen.dart';
+import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/text_row.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/timer_widget.dart';
+import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
+import 'package:waslny_user/resources/constants_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 
 import '../../../core/util/dialog_helper.dart';
@@ -32,6 +34,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -43,39 +46,65 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void initState() {
     ToastHelper.initializeToast(context);
+    AuthCubit.getIns(context)
+        .listenForSms(context, _formKey, _otpController, mounted);
     super.initState();
   }
 
-  initTimer() async {}
-
-  initSmsListner() async {
-    try {
-      _otpController.text = (await AltSmsAutofill().listenForSms)!;
-      await AuthCubit.getIns(context).verifySmsCode("${_otpController.text}");
-
-      // await Future.delayed(const Duration(seconds: 3));
-      // _otpController.text = '2';
-      debugPrint('code ${_otpController.text}');
-    } on PlatformException {
-      debugPrint('SMS Problem');
-    }
-  }
+  // initSmsListener() async {
+  //   try {
+  //     _otpController.text = (await AltSmsAutofill().listenForSms)!;
+  //     if (!mounted) return;
+  //     await AuthCubit.getIns(context)
+  //         .verifySmsCode(_otpController.text, _formKey);
+  //     debugPrint('code ${_otpController.text}');
+  //   } catch (e) {
+  //     debugPrint('SMS Automatic fetching problem Problem :: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    //
+    final bool isEnglishLocale =
+        LocalizationCubit.getIns(context).isEnglishLocale();
     //
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is StartLoadingState) {
           DialogHelper.loadingDialog(context);
-        } else if (state is EndLoadingStateAndNavigate) {
+        }
+        //
+        else if (state is EndLoadingStateWithError) {
           Navigator.of(context).pop();
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute<void>(
-          //     builder: (BuildContext context) => const HomeScreen(),
-          //   ),
-          // );
+          DialogHelper.messageDialog(context, state.msg.tr(context));
+        }
+        //
+        else if (state is EndLoadingStateWithSmsError) {
+          Navigator.of(context).pop();
+          ToastHelper.showToast(
+              context, AppStrings.invalidSMS.tr(context), ToastStates.error);
+        }
+        //
+        else if (state is SmsListeningException) {
+          DialogHelper.messageDialog(
+              context, AppStrings.someThingWentWrong.tr(context));
+        }
+        //
+        else if (state is EndLoadingToOtpScreen) {
+          Navigator.of(context).pop();
+          Navigator.pushAndRemoveUntil<void>(
+            context,
+            NoAnimationPageRoute(
+              builder: (BuildContext context) =>
+                  OtpScreen(phoneNumber: widget.phoneNumber),
+            ),
+            (route) => false,
+          );
+        }
+        //
+        else if (state is EndLoadingToHomeScreen) {
+          Navigator.of(context).pop();
           Navigator.pushAndRemoveUntil<void>(
             context,
             MaterialPageRoute<void>(
@@ -83,23 +112,19 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
             (route) => false,
           );
-        } else if (state is EndLoadingStateWithError) {
+        }
+        //
+        else if (state is EndLoadingToRegisterScreen) {
           Navigator.of(context).pop();
-        } else if (state is ResendSmsState) {
-          Navigator.of(context).pop();
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             NoAnimationPageRoute(
-              builder: (BuildContext context) => OtpScreen(
-                phoneNumber: widget.phoneNumber,
-              ),
+              builder: (BuildContext context) => const RegisterScreen(),
             ),
+            (route) => false,
           );
-        } else if (state is EndLoadingStateWithSmsError) {
-          Navigator.of(context).pop();
-          ToastHelper.showToast(
-              context, AppStrings.invalidSMS.tr(context), ToastStates.error);
         }
+        //
       },
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -128,8 +153,9 @@ class _OtpScreenState extends State<OtpScreen> {
                           ),
                       children: <TextSpan>[
                         TextSpan(
-                          text:
-                              ' ${AppStrings.stars}${widget.phoneNumber.substring(7)}',
+                          text: isEnglishLocale
+                              ? ' ${AppStrings.stars}${widget.phoneNumber.substring(7)}'
+                              : ' ${widget.phoneNumber.substring(7)}${AppStrings.stars}',
                           style:
                               Theme.of(context).textTheme.subtitle1?.copyWith(
                                     color: Colors.white,
@@ -140,50 +166,59 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
                   const AddVerticalSpace(AppPadding.p28),
-                  PinCodeTextField(
-                    autoDisposeControllers: false,
-                    appContext: context,
-                    controller: _otpController,
-                    length: 6,
-                    obscureText: false,
-                    animationType: AnimationType.fade,
-                    animationDuration: const Duration(milliseconds: 300),
-                    // enableActiveFill: true,
-                    pinTheme: PinTheme(
-                      shape: PinCodeFieldShape.box,
-                      borderRadius: BorderRadius.circular(AppPadding.p16),
-                      fieldHeight: 50,
-                      fieldWidth: 50,
+                  Form(
+                    key: _formKey,
+                    child: PinCodeTextField(
+                      errorTextDirection: isEnglishLocale
+                          ? TextDirection.ltr
+                          : TextDirection.rtl,
+                      autoDisposeControllers:
+                          false, //without that line the dispose an error occurred
+                      appContext: context,
+                      controller: _otpController,
+                      length: ConstantsManager.pinCodesLength,
+                      obscureText: false,
+                      animationType: AnimationType.fade,
+                      animationDuration: const Duration(milliseconds: 300),
+                      // enableActiveFill: true,
+                      pinTheme: PinTheme(
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(AppPadding.p16),
+                        fieldHeight: 50,
+                        fieldWidth: 50,
+                      ),
+                      // errorAnimationController: errorController,
+                      // controller: textEditingController,
+                      onCompleted: (v) async {
+                        // debugPrint("Completed");
+                        // AuthCubit.getIns(context).verifySmsCode(v);
+                      },
+                      validator: (_) {
+                        return AuthCubit.getIns(context).validatePinCodeFields(
+                            context, _otpController.text);
+                      },
+                      onChanged: (_) {
+                        // debugPrint("onChanged!");
+                      },
+                      errorTextSpace: AppPadding.p30,
+                      beforeTextPaste: (text) {
+                        // print("Allowing to paste $text");
+                        //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                        //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                        return true;
+                      },
                     ),
-                    // errorAnimationController: errorController,
-                    // controller: textEditingController,
-                    onCompleted: (v) async {
-                      // debugPrint("Completed");
-                      // AuthCubit.getIns(context).verifySmsCode(v);
-                    },
-                    onChanged: (_) {
-                      // debugPrint("onChanged!");
-                    },
-                    beforeTextPaste: (text) {
-                      // print("Allowing to paste $text");
-                      //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                      //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                      return true;
-                    },
                   ),
-                  const AddVerticalSpace(AppPadding.p16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: Size(context.width - 32, 50)),
-                    onPressed: () async {
+                  // const AddVerticalSpace(AppPadding.p16),
+                  Button(
+                    text: AppStrings.verify.tr(context),
+                    padding: AppPadding.p10,
+                    onTap: () async {
                       await AuthCubit.getIns(context)
-                          .verifySmsCode(_otpController.text);
+                          .verifySmsCode(_otpController.text, _formKey);
                     },
-                    child: Text(
-                      AppStrings.verify.tr(context),
-                    ),
                   ),
-                  const AddVerticalSpace(AppPadding.p32),
+                  const AddVerticalSpace(AppPadding.p8),
                   const TimerWidget(),
                   const AddVerticalSpace(AppPadding.p12),
                   TextRow(
@@ -192,7 +227,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     textButton: AppStrings.resend,
                     onTap: () async {
                       await AuthCubit.getIns(context)
-                          .resendSms(widget.phoneNumber);
+                          .loginOrResendSms(_otpController.text);
                     },
                   ),
                 ],

@@ -3,6 +3,7 @@ class AppStrings {
   static const String storedLocale = 'storedLocale';
   static const String storedRoute = 'storedRoute';
   static const String isLightTheme = 'isLightTheme';
+  static const String storedToken = 'storedToken';
 
   //---------------On boarding
   static const String done = 'done';
@@ -33,6 +34,12 @@ class AppStrings {
   static const String plus20Arabic = '20+';
   static const String stars = '*********';
   static const String invalidSMS = 'invalidSMS';
+  static const String alert = 'alert';
+  static const String internetConnectionError = 'internetConnectionError';
+  static const String someThingWentWrong = 'someThingWentWrong';
+  static const String ok = 'ok';
+  static const String emptyValue = 'emptyValue';
+  static const String enterAllDigits = 'enterAllDigits';
 
   static const notFoundPage = "notFoundPage";
   static const appName = "appName";

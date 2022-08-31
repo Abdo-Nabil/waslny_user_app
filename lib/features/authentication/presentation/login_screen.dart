@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
 import 'package:waslny_user/core/widgets/custom_form_field.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
-import 'package:waslny_user/features/authentication/presentation/register_screen.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/image_with_logo.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/login_or_register_text.dart';
-import 'package:waslny_user/features/authentication/presentation/widgets/text_row.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
 
 import '../../../core/util/dialog_helper.dart';
-import '../../../core/util/hex_color.dart';
-import '../../../core/util/no_animation_page_route.dart';
-import '../../../core/util/toast_helper.dart';
 import '../../../resources/colors_manager.dart';
 import 'otp_screen.dart';
 
@@ -45,7 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (state is StartLoadingState) {
           DialogHelper.loadingDialog(context);
-        } else if (state is EndLoadingStateAndNavigate) {
+        }
+        //
+        else if (state is EndLoadingToOtpScreen) {
           Navigator.of(context).pop();
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) {
@@ -54,8 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             }),
           );
-        } else if (state is EndLoadingStateWithError) {
+        }
+        //
+        else if (state is EndLoadingStateWithError) {
           Navigator.of(context).pop();
+          DialogHelper.messageDialog(context, state.msg.tr(context));
         }
       },
       child: GestureDetector(
@@ -92,27 +93,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
                     return Button(
-                      text: AppStrings.login,
+                      text: AppStrings.login.tr(context),
                       showButton: AuthCubit.getIns(context).showLoginButton,
                       onTap: () async {
-                        AuthCubit.getIns(context).login(_phoneController.text);
+                        AuthCubit.getIns(context)
+                            .loginOrResendSms(_phoneController.text);
                       },
                     );
                   },
                 ),
-                TextRow(
-                  text: AppStrings.dontHaveAccount,
-                  textButton: AppStrings.registerNow,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      NoAnimationPageRoute(
-                        builder: (context) {
-                          return const RegisterScreen();
-                        },
-                      ),
-                    );
-                  },
-                )
               ],
             ),
           ),

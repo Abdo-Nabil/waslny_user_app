@@ -20,4 +20,23 @@ class DialogHelper {
           );
         });
   }
+
+  static Future messageDialog(BuildContext context, String msg) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(AppStrings.alert.tr(context)),
+            content: Text(msg),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(AppStrings.ok.tr(context)))
+            ],
+          );
+        });
+  }
 }
