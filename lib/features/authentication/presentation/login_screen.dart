@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/core/util/navigator_helper.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
 import 'package:waslny_user/core/widgets/custom_form_field.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
@@ -45,12 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
         //
         else if (state is EndLoadingToOtpScreen) {
           Navigator.of(context).pop();
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) {
-              return OtpScreen(
-                phoneNumber: _phoneController.text,
-              );
-            }),
+          NavigatorHelper.pushReplacement(
+            context,
+            OtpScreen(
+              phoneNumber: _phoneController.text,
+            ),
           );
         }
         //

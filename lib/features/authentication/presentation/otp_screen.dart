@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:waslny_user/core/extensions/context_extension.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
-import 'package:waslny_user/core/util/no_animation_page_route.dart';
+import 'package:waslny_user/core/util/navigator_helper.dart';
 import 'package:waslny_user/core/util/toast_helper.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
@@ -93,35 +93,26 @@ class _OtpScreenState extends State<OtpScreen> {
         //
         else if (state is EndLoadingToOtpScreen) {
           Navigator.of(context).pop();
-          Navigator.pushAndRemoveUntil<void>(
+          NavigatorHelper.pushAndRemoveUntil(
             context,
-            NoAnimationPageRoute(
-              builder: (BuildContext context) =>
-                  OtpScreen(phoneNumber: widget.phoneNumber),
-            ),
-            (route) => false,
+            OtpScreen(phoneNumber: widget.phoneNumber),
+            hasAnimation: false,
           );
         }
         //
         else if (state is EndLoadingToHomeScreen) {
           Navigator.of(context).pop();
-          Navigator.pushAndRemoveUntil<void>(
+          NavigatorHelper.pushAndRemoveUntil(
             context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => const HomeScreen(),
-            ),
-            (route) => false,
+            const HomeScreen(),
           );
         }
         //
         else if (state is EndLoadingToRegisterScreen) {
           Navigator.of(context).pop();
-          Navigator.pushAndRemoveUntil(
+          NavigatorHelper.pushAndRemoveUntil(
             context,
-            NoAnimationPageRoute(
-              builder: (BuildContext context) => const RegisterScreen(),
-            ),
-            (route) => false,
+            const RegisterScreen(),
           );
         }
         //

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 
-import '../../../../resources/app_strings.dart';
 import '../../../../resources/colors_manager.dart';
 
 class LoginOrRegisterText extends StatelessWidget {
