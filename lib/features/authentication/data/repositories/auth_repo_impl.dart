@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/network/network_info.dart';
 import 'package:waslny_user/features/authentication/data/datasources/auth_local_data_source.dart';
-import 'package:waslny_user/features/authentication/data/models/user_model.dart';
 
 import 'package:waslny_user/features/authentication/domain/entities/user_entity.dart';
 
@@ -23,12 +22,6 @@ class AuthRepoImpl implements AuthRepo {
   });
 
   @override
-  Future<Either<Failure, UserEntity>> getUserData(String userId) {
-    // TODO: implement getUserData
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Either<Failure, dynamic>> loginOrResendSms(String phoneNumber) async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
@@ -36,28 +29,6 @@ class AuthRepoImpl implements AuthRepo {
       try {
         await authRemoteDataSource.loginOrResendSms(phoneNumber);
         return const Right(unit);
-      } on ServerException {
-        return Left(ServerFailure());
-      }
-      //
-    } else {
-      return Left(InternetConnectionFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> createUser(UserEntity userEntity) async {
-    final bool isConnected = await networkInfo.isConnected;
-    if (isConnected) {
-      //
-      try {
-        final UserModel useModel = UserModel(
-          userId: userEntity.userId,
-          phoneNumber: userEntity.phoneNumber,
-          name: userEntity.name,
-        );
-        await authRemoteDataSource.createUser(useModel);
-        return Future.value(const Right(unit));
       } on ServerException {
         return Left(ServerFailure());
       }
@@ -78,6 +49,41 @@ class AuthRepoImpl implements AuthRepo {
         return Right(userCredential);
       } on InvalidSmsException {
         return Left(InvalidSmsFailure());
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+      //
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> createUser(String userName) async {
+    final bool isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      //
+      try {
+        await authRemoteDataSource.createUser(userName);
+        return Future.value(const Right(unit));
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+      //
+    } else {
+      return Left(InternetConnectionFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> getUserData(String userId) async {
+    final bool isConnected = await networkInfo.isConnected;
+    if (isConnected) {
+      //
+      try {
+        final UserEntity userEntity =
+            await authRemoteDataSource.getUserData(userId);
+        return Right(userEntity);
       } on ServerException {
         return Left(ServerFailure());
       }

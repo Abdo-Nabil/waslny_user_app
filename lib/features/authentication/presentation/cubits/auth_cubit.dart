@@ -154,8 +154,6 @@ class AuthCubit extends Cubit<AuthState> {
         (userCredential) async {
           //
           if (userCredential.additionalUserInfo.isNewUser) {
-            // await createUserAccount();
-
             await saveToken(userCredential);
             emit(EndLoadingToRegisterScreen());
           } else {
@@ -165,55 +163,38 @@ class AuthCubit extends Cubit<AuthState> {
         },
       );
     }
-
-    // //TODO: save the token
-
-    // try {
-    //   final UserCredential userCredential =
-    //       await FirebaseAuth.instance.signInWithCredential(credential);
-    //
-    //   final bool? isNewUser = userCredential.additionalUserInfo?.isNewUser;
-    //
-    //   // if(isNewUser!){
-    //   //   createUserAccount(UserModel userModel);
-    //   // }else{
-    //   //
-    //   // }
-    //   final tokennn = await userCredential.user?.getIdToken();
-    //   debugPrint('LLL 1 :::::: ${userCredential.user?.phoneNumber}');
-    //   debugPrint('LLL 2 :::::: ${userCredential.user?.uid}');
-    //   debugPrint('LLL 3 :::::: ${tokennn}');
-    //   debugPrint(
-    //       'LLL 4 :::::: ${userCredential.additionalUserInfo?.isNewUser}');
-    //   // debugPrint('LLL 3 :::::: ${signedUser.user?.');
-    //   // token = await FirebaseAuth.instance.currentUser?.getIdToken();
-    //   //
-    //   // check the user id if found go to home else go to register name screen
-    //   final userId = FirebaseAuth.instance.currentUser?.uid;
-    //
-    //   // //TODO: save the token
-    //   emit(EndLoadingStateAndNavigate());
-    // } catch (e) {
-    //   debugPrint('Error in sign in :: $e');
-    //   emit(EndLoadingStateWithSmsError());
-    // }
   }
 
+  //Create New User
   Future register(
     GlobalKey<FormState> formKey,
     TextEditingController username,
   ) async {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
-      // username.text.trim()
-      //register code using firebase
       await Future.delayed(const Duration(seconds: 3));
-      if (false) {
-        emit(EndLoadingStateAndNavigate());
-      } else {
-        emit(EndLoadingStateWithError('xxxxxx'));
-      }
-      // debugPrint('Register Done');
+      final result = await createUserUseCase.call(username.text);
+      result.fold(
+        (failure) {
+          handleFailure(failure);
+        },
+        (success) async {
+          emit(EndLoadingToHomeScreen());
+        },
+      );
     }
   }
+
+  // Future getUserData(String userId) async {
+  //     final result = await getUserDataUseCase.call(userId);
+  //     result.fold(
+  //       (failure) {
+  //         handleFailure(failure);
+  //       },
+  //       (success) async {
+  //         emit(EndLoadingToHomeScreen());
+  //       },
+  //     );
+  //   }
+
 }

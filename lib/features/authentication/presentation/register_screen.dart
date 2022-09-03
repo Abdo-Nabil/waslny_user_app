@@ -5,7 +5,9 @@ import 'package:waslny_user/core/util/dialog_helper.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/image_with_logo.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/login_or_register_text.dart';
+import 'package:waslny_user/features/home_screen/presentation/home_screen.dart';
 
+import '../../../core/util/navigator_helper.dart';
 import '../../../core/widgets/add_vertical_space.dart';
 import '../../../core/widgets/custom_form_field.dart';
 import '../../../resources/app_strings.dart';
@@ -39,17 +41,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       listener: (context, state) {
         if (state is StartLoadingState) {
           DialogHelper.loadingDialog(context);
-        } else if (state is EndLoadingStateAndNavigate) {
-          // Navigator.of(context).pop();
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(builder: (context) {
-          //     return OtpScreen(
-          //       phoneNumber: _phoneController.text,
-          //     );
-          //   }),
-          // );
-        } else if (state is EndLoadingStateWithError) {
+        }
+        //
+        else if (state is EndLoadingToHomeScreen) {
           Navigator.of(context).pop();
+          NavigatorHelper.pushAndRemoveUntil(context, const HomeScreen());
+        }
+        //
+        else if (state is EndLoadingStateWithError) {
+          Navigator.of(context).pop();
+          DialogHelper.messageDialog(context, state.msg.tr(context));
         }
       },
       child: GestureDetector(
@@ -77,8 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           validate: (value) {
                             return AuthCubit.getIns(context)
-                                .validateUsername(context, value)
-                                ?.tr(context);
+                                .validateUsername(context, value);
                           },
                         ),
                         const AddVerticalSpace(AppPadding.p16),

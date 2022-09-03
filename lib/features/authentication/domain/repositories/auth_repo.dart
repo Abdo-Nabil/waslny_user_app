@@ -7,7 +7,7 @@ abstract class AuthRepo {
   //return verificationId in case in fireBase
   Future<Either<Failure, dynamic>> loginOrResendSms(String phoneNumber);
   Future<Either<Failure, dynamic>> verifySmsCode(String smsCode);
-  Future<Either<Failure, Unit>> createUser(UserEntity userEntity);
+  Future<Either<Failure, Unit>> createUser(String userName);
   Future<Either<Failure, UserEntity>> getUserData(String userId);
   Either<Failure, String?> getToken();
   Future<Either<Failure, Unit>> setToken(String token);

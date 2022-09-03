@@ -41,6 +41,9 @@ class AppStrings {
   static const String emptyValue = 'emptyValue';
   static const String enterAllDigits = 'enterAllDigits';
 
+  // FireStore
+  static const String usersCollection = 'users';
+
   static const notFoundPage = "notFoundPage";
   static const appName = "appName";
   static const appName_for_recent_app = "Waslny User";
