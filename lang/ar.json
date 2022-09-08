@@ -45,7 +45,10 @@
   "ok": "موافق",
   "emptyValue": "لا يمكن ترك الحقول قارغة!",
   "enterAllDigits": "من فضلك فم بإدخال جميع الحقول",
-
+  "requestCar": "اطلب سيارة",
+  "from": "من",
+  "to": "إلى",
+  "whereToGo": "إلى أين ؟",
 
   "opps": "عفواً !",
   "please_check_your_internet_connection_and_try_again": "من فضلك أفحص اتصالك بالانترنت ، وأعد المحاولة",

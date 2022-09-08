@@ -44,6 +44,12 @@ class AppStrings {
   // FireStore
   static const String usersCollection = 'users';
 
+  //home screen
+  static const String requestCar = 'requestCar';
+  static const String from = 'from';
+  static const String to = 'to';
+  static const String whereToGo = 'whereToGo';
+
   static const notFoundPage = "notFoundPage";
   static const appName = "appName";
   static const appName_for_recent_app = "Waslny User";

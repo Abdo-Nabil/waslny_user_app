@@ -42,6 +42,12 @@
   "ok": "Ok",
   "emptyValue": "Fields Can't be empty",
   "enterAllDigits": "Please complete all fields",
+  "requestCar": "Request a car",
+  "from": "from",
+  "to": "to",
+  "whereToGo": "Where to go?",
+
+
 
 
 
@@ -50,7 +56,6 @@
   "please_check_your_internet_connection_and_try_again": "Please check your Internet Connection and try again",
   "try_again": "Try Again",
   "welcome": "Welcome",
-  "ok": "Ok",
   "cancel": "Cancel",
   "something_went_wrong": "Something Went Wrong",
   "reload_screen": "Reload Screen",

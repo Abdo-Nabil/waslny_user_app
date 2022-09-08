@@ -3,7 +3,6 @@ import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/widgets/add_horizontal_space.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
 
-import '../../features/authentication/presentation/cubits/auth_cubit.dart';
 import '../../features/localization/presentation/cubits/localization_cubit.dart';
 import '../../resources/app_strings.dart';
 import '../../resources/colors_manager.dart';
@@ -41,7 +40,11 @@ class CustomFormFiled extends StatelessWidget {
       style: const TextStyle(color: ColorsManager.whiteColor),
       decoration: InputDecoration(
         labelText: label.tr(context),
-        suffixIcon: isEnglishLocale ? null : ArabicSuffix(icon: icon),
+        suffixIcon: isEnglishLocale
+            ? null
+            : showPlus20
+                ? ArabicSuffix(icon: icon)
+                : null,
         prefixIcon: !showPlus20
             ? icon
             : isEnglishLocale
