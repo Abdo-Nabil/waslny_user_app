@@ -19,7 +19,7 @@ class ImageWithLogo extends StatelessWidget {
         AddVerticalSpace(context.height * 0.1),
         Stack(
           children: [
-            Image.asset(ImageAssets.AuthImgPath),
+            Image.asset(ImageAssets.authImgPath),
             Positioned(
               right: AppPadding.p32,
               top: context.height * 0.1,

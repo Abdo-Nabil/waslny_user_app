@@ -41,3 +41,13 @@ class InvalidSmsFailure extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class LocationPermissionFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
+
+class TimeLimitFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}

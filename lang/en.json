@@ -46,6 +46,17 @@
   "from": "from",
   "to": "to",
   "whereToGo": "Where to go?",
+  "pickUpLocation": "Pick up location",
+  "dropOffLocation": "Drop off location",
+  "givePermission": "Please, provide the required permissions for the app to work properly!",
+  "locationServicesDisabled": "Location services are disabled, please turn on location services and try again",
+  "locationPermissionsDenied": "Location permissions are denied, please grant permissions and try again",
+  "locationPermissionsDeniedForEver": "Location permissions are permanently denied, please grant permissions from settings and try again",
+  "notFoundLocation": "Location not found!",
+  "searchForLocation": "Search for location",
+  "startPosition": "Origin",
+  "endPosition": "Destination",
+
 
 
 

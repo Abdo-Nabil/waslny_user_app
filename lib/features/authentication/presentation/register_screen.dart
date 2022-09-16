@@ -73,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           context: context,
                           controller: _nameController,
                           label: AppStrings.username,
-                          icon: const Icon(
+                          iconWidget: const Icon(
                             Icons.person,
                           ),
                           validate: (value) {

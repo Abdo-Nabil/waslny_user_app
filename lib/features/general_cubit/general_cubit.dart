@@ -3,7 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waslny_user/config/routes/app_routes.dart';
+import 'package:waslny_user/features/authentication/presentation/login_screen.dart';
+import 'package:waslny_user/features/home_screen/presentation/home_screen.dart';
 import 'package:waslny_user/features/on_boarding/on_boarding_screen.dart';
 
 import '../../resources/app_strings.dart';
@@ -23,10 +24,13 @@ class GeneralCubit extends Cubit<GeneralState> {
     }
     //
     else {
-      selectedScreen = Scaffold(
-        backgroundColor: Colors.green,
-      );
-      //check if token found to navigate to login or home
+      final String? result =
+          sharedPreferences.getString(AppStrings.storedToken);
+      if (result == null) {
+        selectedScreen = const LoginScreen();
+      } else {
+        selectedScreen = const HomeScreen();
+      }
     }
   }
 

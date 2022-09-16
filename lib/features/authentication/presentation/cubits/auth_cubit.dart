@@ -39,6 +39,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   bool showLoginButton = false;
   bool showResendButton = false;
+  //
+  late final UserCredential userCred;
 
   static AuthCubit getIns(context) {
     return BlocProvider.of<AuthCubit>(context);
@@ -138,8 +140,8 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  Future saveToken(UserCredential userCredential) async {
-    final token = await userCredential.user?.getIdToken();
+  Future saveToken() async {
+    final token = await userCred.user?.getIdToken();
     await setTokenUseCase.call(token!);
   }
 
@@ -153,11 +155,11 @@ class AuthCubit extends Cubit<AuthState> {
         },
         (userCredential) async {
           //
+          userCred = userCredential;
           if (userCredential.additionalUserInfo.isNewUser) {
-            await saveToken(userCredential);
             emit(EndLoadingToRegisterScreen());
           } else {
-            // getUserData();
+            await saveToken();
             emit(EndLoadingToHomeScreen());
           }
         },
@@ -179,6 +181,7 @@ class AuthCubit extends Cubit<AuthState> {
           handleFailure(failure);
         },
         (success) async {
+          await saveToken();
           emit(EndLoadingToHomeScreen());
         },
       );

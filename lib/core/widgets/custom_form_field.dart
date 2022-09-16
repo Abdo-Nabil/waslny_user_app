@@ -11,22 +11,30 @@ import '../../resources/styles_manager.dart';
 class CustomFormFiled extends StatelessWidget {
   final BuildContext context;
   final String label;
-  final Icon icon;
+  final Widget iconWidget;
   final TextEditingController controller;
   final Function? onChange;
   final Function? validate;
+  final Function? onTap;
+  final Function? onFieldSubmitted;
   final bool isNumberKeyboard;
   final bool showPlus20;
+  final bool readOnly;
+  final bool autoFocus;
 
   const CustomFormFiled({
     required this.context,
     required this.label,
-    required this.icon,
+    required this.iconWidget,
     required this.controller,
     this.onChange,
     this.validate,
+    this.onTap,
+    this.onFieldSubmitted,
     this.isNumberKeyboard = false,
     this.showPlus20 = false,
+    this.readOnly = false,
+    this.autoFocus = false,
     Key? key,
   }) : super(key: key);
 
@@ -37,19 +45,23 @@ class CustomFormFiled extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: isNumberKeyboard ? TextInputType.phone : null,
+      readOnly: readOnly,
+      autofocus: autoFocus,
       style: const TextStyle(color: ColorsManager.whiteColor),
       decoration: InputDecoration(
         labelText: label.tr(context),
         suffixIcon: isEnglishLocale
             ? null
             : showPlus20
-                ? ArabicSuffix(icon: icon)
+                ? const ArabicSuffix()
                 : null,
         prefixIcon: !showPlus20
-            ? icon
+            ? iconWidget
             : isEnglishLocale
-                ? EnglishPrefix(icon: icon)
-                : icon,
+                ? EnglishPrefix(
+                    iconWidget: iconWidget,
+                  )
+                : iconWidget,
       ),
       onChanged: (value) {
         if (onChange != null) {
@@ -63,6 +75,16 @@ class CustomFormFiled extends StatelessWidget {
           return null;
         }
       },
+      onTap: () {
+        if (onTap != null) {
+          onTap!();
+        }
+      },
+      onFieldSubmitted: (value) {
+        if (onFieldSubmitted != null) {
+          onFieldSubmitted!(value);
+        }
+      },
 
       // decoration: ,
     );
@@ -72,9 +94,9 @@ class CustomFormFiled extends StatelessWidget {
 class EnglishPrefix extends StatelessWidget {
   const EnglishPrefix({
     Key? key,
-    required this.icon,
+    required this.iconWidget,
   }) : super(key: key);
-  final Icon icon;
+  final Widget iconWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +105,7 @@ class EnglishPrefix extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          icon,
+          iconWidget,
           const AddHorizontalSpace(AppPadding.p14),
           Padding(
             padding: const EdgeInsets.only(right: AppPadding.p16),
@@ -101,10 +123,7 @@ class EnglishPrefix extends StatelessWidget {
 class ArabicSuffix extends StatelessWidget {
   const ArabicSuffix({
     Key? key,
-    required this.icon,
   }) : super(key: key);
-
-  final Icon icon;
 
   @override
   Widget build(BuildContext context) {

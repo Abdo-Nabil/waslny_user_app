@@ -9,6 +9,9 @@ import 'package:waslny_user/features/authentication/domain/usecases/set_token_us
 import 'package:waslny_user/features/authentication/domain/usecases/verify_sms_code_use_case.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
+import 'package:waslny_user/features/home_screen/services/home_local_data.dart';
+import 'package:waslny_user/features/home_screen/services/home_remote_data.dart';
+import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/features/localization/data/datasources/localization_local_data_source.dart';
 import 'package:waslny_user/features/localization/domain/repositories/localization_repository.dart';
 import 'package:waslny_user/features/localization/domain/usecases/get_locale_use_case.dart';
@@ -16,6 +19,7 @@ import 'package:waslny_user/features/theme/presentation/cubits/theme_cubit.dart'
 
 import 'core/network/network_info.dart';
 import 'features/authentication/domain/usecases/create_user_use_case.dart';
+import 'features/home_screen/cubits/home_screen_cubit.dart';
 import 'features/localization/data/repositories/localization_repository_impl.dart';
 import 'features/localization/domain/usecases/set_locale_use_case.dart';
 
@@ -39,6 +43,7 @@ Future<void> init() async {
   await initTheme();
   await initGeneralCubit();
   await initializeAuth();
+  await initHomeScreen();
 }
 
 Future<void> initLocalization() async {
@@ -182,7 +187,17 @@ Future<void> initializeAuth() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
+}
+
+Future<void> initHomeScreen() async {
+  sl.registerFactory(() => HomeScreenCubit(sl()));
+
+  sl.registerLazySingleton<HomeRemoteData>(
+      () => HomeRemoteData(networkInfo: sl(), client: sl()));
+  sl.registerLazySingleton<HomeLocalData>(() => HomeLocalData());
+  sl.registerLazySingleton<HomeRepo>(() => HomeRepo(sl(), sl()));
 }
 
 //-----------------------------------------------------------------

@@ -126,7 +126,7 @@ class _OtpScreenState extends State<OtpScreen> {
               child: Column(
                 children: [
                   AddVerticalSpace(context.height * 0.03),
-                  Image.asset(ImageAssets.AuthOtpImgPath),
+                  Image.asset(ImageAssets.authOtpImgPath),
                   AddVerticalSpace(context.height * 0.03),
                   Text(
                     AppStrings.phoneNumberVerification.tr(context),

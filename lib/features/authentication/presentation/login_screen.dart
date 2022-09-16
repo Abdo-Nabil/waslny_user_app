@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _phoneController,
                       label: AppStrings.phoneNumber,
                       showPlus20: true,
-                      icon: Icon(
+                      iconWidget: Icon(
                         LocalizationCubit.getIns(context).isEnglishLocale()
                             ? Icons.phone
                             : Icons.phone_enabled,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
+import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 import 'package:waslny_user/features/theme/presentation/cubits/theme_cubit.dart';
 import 'package:waslny_user/resources/app_strings.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => sl<GeneralCubit>()..getInitialScreen()),
         BlocProvider(create: (context) => sl<AuthCubit>()),
+        BlocProvider(create: (context) => sl<HomeScreenCubit>()),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationState>(
         builder: (context, state) {
@@ -55,6 +57,7 @@ class MyApp extends StatelessWidget {
                     AppLocalizationsSetup.localizationsDelegates,
                 // home: const OtpScreen(phoneNumber: '1111522423'),
                 // home: const LoginScreen(),
+                // home: initialScreen,
                 home: const HomeScreen(),
               );
             },

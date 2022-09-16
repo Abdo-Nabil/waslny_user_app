@@ -23,11 +23,11 @@ class RoundedWidget extends StatelessWidget {
         width: AppPadding.p46,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppPadding.p20),
-          color: ColorsManager.geryColor,
+          color: ColorsManager.greyBlack,
         ),
         child: Icon(
           iconData,
-          color: ColorsManager.greyBlack,
+          color: ColorsManager.whiteColor,
         ),
       ),
     );

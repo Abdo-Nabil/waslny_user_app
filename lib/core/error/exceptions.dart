@@ -13,3 +13,7 @@ class TranslateException implements Exception {}
 class LoginVerificationFailedException implements Exception {}
 
 class InvalidSmsException implements Exception {}
+
+class LocationPermissionException implements Exception {}
+
+class TimeLimitException implements Exception {}

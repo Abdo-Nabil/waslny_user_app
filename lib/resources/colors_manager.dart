@@ -5,6 +5,8 @@ import '../core/util/hex_color.dart';
 class ColorsManager {
   static const Color whiteColor = Colors.white;
   static const Color geryColor = Colors.grey;
+  static const Color redColor = Colors.red;
+  static Color yellowAccent = Colors.yellowAccent;
   static Color greyBlack = HexColor('#000014');
 
   static const Color primary = Colors.blue;

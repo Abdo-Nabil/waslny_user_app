@@ -43,43 +43,45 @@ class AppTheme {
 
   static ThemeData darkTheme(Locale locale, BuildContext context) {
     return ThemeData(
-        // fontFamily: locale.languageCode == 'en' ? 'DynaPuff' : 'Amiri',
-        colorScheme: const ColorScheme.dark().copyWith(
-          primary: Colors.blue,
-          secondary: Colors.blueAccent,
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
+      // fontFamily: locale.languageCode == 'en' ? 'DynaPuff' : 'Amiri',
+      colorScheme: const ColorScheme.dark().copyWith(
+        primary: Colors.blue,
+        secondary: Colors.teal,
+        onPrimary: Colors.white,
+        onSecondary: Colors.deepOrange,
 
-          // onSurface: Colors.white,
-          // onSecondary: Colors.white,
-          // onBackground: Colors.white,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          contentPadding: const EdgeInsets.all(AppPadding.p16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppPadding.p20),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(AppPadding.p20),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppPadding.p20),
-            ),
-            textStyle: const TextStyle().copyWith(
-              fontSize: Theme.of(context).textTheme.headline6!.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            padding: const EdgeInsets.all(AppPadding.p14),
-          ),
-        ),
-        dialogTheme: DialogTheme(
-            shape: RoundedRectangleBorder(
+        // onSurface: Colors.white,
+        // onSecondary: Colors.white,
+        // onBackground: Colors.white,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        contentPadding: const EdgeInsets.all(AppPadding.p16),
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppPadding.p20),
-        )));
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.white),
+          borderRadius: BorderRadius.circular(AppPadding.p20),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppPadding.p20),
+          ),
+          textStyle: const TextStyle().copyWith(
+            fontSize: Theme.of(context).textTheme.headline6!.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+          padding: const EdgeInsets.all(AppPadding.p14),
+        ),
+      ),
+      dialogTheme: DialogTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppPadding.p20),
+        ),
+      ),
+    );
   }
 }
 //

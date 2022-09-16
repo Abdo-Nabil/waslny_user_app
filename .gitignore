@@ -10,9 +10,8 @@
 .svn/
 migrate_working_dir/
 
-sensitive/
-sensitive/constants/
-sensitive/upload-keystore/
+lib/sensitive/
+android/app/src/main/AndroidManifest.xml
 
 
 # IntelliJ related

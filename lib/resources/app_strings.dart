@@ -41,15 +41,28 @@ class AppStrings {
   static const String emptyValue = 'emptyValue';
   static const String enterAllDigits = 'enterAllDigits';
 
-  // FireStore
+  //--------------- FireStore
   static const String usersCollection = 'users';
 
-  //home screen
+  //--------------- home screen
   static const String requestCar = 'requestCar';
   static const String from = 'from';
   static const String to = 'to';
   static const String whereToGo = 'whereToGo';
+  static const String pickUpLocation = 'pickUpLocation';
+  static const String dropOffLocation = 'dropOffLocation';
+  static const String givePermission = 'givePermission';
+  static const String locationServicesDisabled = 'locationServicesDisabled';
+  static const String locationPermissionsDenied = 'locationPermissionsDenied';
+  static const String locationPermissionsDeniedForEver =
+      'locationPermissionsDeniedForEver';
+  static const String notFoundLocation = 'notFoundLocation';
+  static const String searchForLocation = 'searchForLocation';
+  static const String startPosition = 'startPosition';
+  static const String endPosition = 'endPosition';
 
+  //
+  //
   static const notFoundPage = "notFoundPage";
   static const appName = "appName";
   static const appName_for_recent_app = "Waslny User";

@@ -49,6 +49,19 @@
   "from": "من",
   "to": "إلى",
   "whereToGo": "إلى أين ؟",
+  "pickUpLocation": "جهة الانطلاق",
+  "dropOffLocation": "جهة الوصول",
+  "givePermission": "من فضلك قم بمنح صلاحيات الوصول المطلوبة لكي يعمل التطبيق بصورة صحيحة!",
+  "locationServicesDisabled": "خدمات الموقع معطلة، من فضلك قم بتشغيلها و إعادة المحاولة",
+  "locationPermissionsDenied": "صلاحيات الوصول للموفع معطلة، من فضلك قم بمنح صلاحيات الوصول و إعادة المحاولة",
+  "locationPermissionsDeniedForEver": " تم منع صلاحيات الوصول للموفع بشكل دائم، من فضلك قم بمنح صلاحيات الوصول من اعدادات الهاتف و إعادة المحاولة",
+  "notFoundLocation": "لم يتم العثور على هذا الموقعَ!",
+  "searchForLocation": "ابحث عن موقع ما",
+  "startPosition": "البداية",
+  "endPosition": "الوصول",
+
+
+
 
   "opps": "عفواً !",
   "please_check_your_internet_connection_and_try_again": "من فضلك أفحص اتصالك بالانترنت ، وأعد المحاولة",
