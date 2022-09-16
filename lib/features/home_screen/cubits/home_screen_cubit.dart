@@ -96,6 +96,17 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         position: point,
       ),
     );
+    if (_isOrigin) {
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: origin,
+            zoom: ConstantsManager.mapZoomLevel,
+          ),
+        ),
+      );
+    }
+
     emit(HomeSuccessWithoutPopState());
   }
 
