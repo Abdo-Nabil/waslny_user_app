@@ -9,9 +9,11 @@ import '../../cubits/home_screen_cubit.dart';
 class PlaceItem extends StatelessWidget {
   final TextEditingController controller;
   final PlaceModel placeModel;
+  final bool isGreenColor;
   const PlaceItem({
     required this.controller,
     required this.placeModel,
+    this.isGreenColor = false,
     Key? key,
   }) : super(key: key);
 
@@ -22,9 +24,10 @@ class PlaceItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(AppPadding.p8),
       child: ListTile(
-        leading: const Icon(
+        leading: Icon(
           Icons.location_on_sharp,
-          color: ColorsManager.redColor,
+          color:
+              isGreenColor ? ColorsManager.greenColor : ColorsManager.redColor,
         ),
         title: Text(placeModel.name),
         shape: RoundedRectangleBorder(

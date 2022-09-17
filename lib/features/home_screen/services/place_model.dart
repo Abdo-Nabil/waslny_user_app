@@ -4,15 +4,15 @@ class PlaceModel {
   final String name;
   final String placeId;
   final LatLng location;
-  final LatLng northeastView;
-  final LatLng southwestView;
+  final LatLng? northeastView;
+  final LatLng? southwestView;
 
   const PlaceModel({
     required this.name,
     required this.placeId,
     required this.location,
-    required this.northeastView,
-    required this.southwestView,
+    this.northeastView,
+    this.southwestView,
   });
 
   factory PlaceModel.fromJson(Map<String, dynamic> map) {

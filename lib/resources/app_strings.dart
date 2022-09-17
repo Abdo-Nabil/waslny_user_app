@@ -60,6 +60,7 @@ class AppStrings {
   static const String searchForLocation = 'searchForLocation';
   static const String startPosition = 'startPosition';
   static const String endPosition = 'endPosition';
+  static const String myCurrentLocation = 'myCurrentLocation';
 
   //
   //

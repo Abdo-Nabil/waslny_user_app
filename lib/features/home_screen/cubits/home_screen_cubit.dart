@@ -17,7 +17,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   final HomeRepo homeRepo;
   HomeScreenCubit(this.homeRepo) : super(HomeScreenInitial());
 
-  CameraPosition? homeCameraPosition;
+  LatLng? myCurrentLatLng;
   late bool _isOrigin;
   late GoogleMapController mapController;
   Set<Marker> markers = {};
@@ -60,15 +60,30 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
   Future<void> onMapCreatedCallback(GoogleMapController controller) async {
     mapController = controller;
+    await getMyLocationAndAnimateCamera();
+  }
+
+  getMyLocationAndAnimateCamera() async {
     await getMyLocation();
-    //
+    CameraPosition? myCurrentCameraPosition;
+    if (myCurrentLatLng != null) {
+      myCurrentCameraPosition = CameraPosition(
+          target: myCurrentLatLng!, zoom: ConstantsManager.mapZoomLevel);
+    }
     mapController.animateCamera(
-      CameraUpdate.newCameraPosition(homeCameraPosition ?? cairoPosition),
+      CameraUpdate.newCameraPosition(myCurrentCameraPosition ?? cairoPosition),
     );
   }
 
   void goToHome() {
-    final cameraPosition = homeCameraPosition ?? cairoPosition;
+    //
+    CameraPosition? myCurrentCameraPosition;
+    if (myCurrentLatLng != null) {
+      myCurrentCameraPosition = CameraPosition(
+          target: myCurrentLatLng!, zoom: ConstantsManager.mapZoomLevel);
+    }
+    //
+    final cameraPosition = myCurrentCameraPosition ?? cairoPosition;
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(cameraPosition),
     );
@@ -188,12 +203,9 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
             emit(HomeFailureState());
           },
           (success) {
-            homeCameraPosition = CameraPosition(
-              target: LatLng(
-                success.latitude,
-                success.longitude,
-              ),
-              zoom: ConstantsManager.mapZoomLevel,
+            myCurrentLatLng = LatLng(
+              success.latitude,
+              success.longitude,
             );
             emit(HomeSuccessWithPopState());
             debugPrint('My Location $success');

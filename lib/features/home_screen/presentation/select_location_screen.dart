@@ -8,6 +8,7 @@ import 'package:waslny_user/core/widgets/custom_form_field.dart';
 import 'package:waslny_user/core/widgets/no_x_widget.dart';
 import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/location_item.dart';
+import 'package:waslny_user/features/home_screen/services/place_model.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
 import 'package:waslny_user/resources/colors_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
@@ -42,13 +43,29 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //
+    final PlaceItem? myCurrentLocationPlaceItem =
+        HomeScreenCubit.getIns(context).getIsOrigin()
+            ? PlaceItem(
+                controller: widget.controller,
+                isGreenColor: true,
+                placeModel: PlaceModel(
+                  name: AppStrings.myCurrentLocation.tr(context),
+                  placeId: 'MyCurrentLocation',
+                  location: HomeScreenCubit.getIns(context).myCurrentLatLng!,
+                ),
+              )
+            : null;
+    //
     final bool isEnglishLocale =
         LocalizationCubit.getIns(context).isEnglishLocale();
+    //
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
         builder: (context, state) {
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Column(
               children: [
                 Container(
@@ -108,10 +125,14 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                   builder: (context, state) {
                     if (state is SearchPlaceSuccessState) {
                       if (state.places.isEmpty) {
-                        return Expanded(
-                          child: NoXWidget(
-                            msg: AppStrings.notFoundLocation.tr(context),
-                            imagePath: ImageAssets.notFoundImgPath,
+                        return _myLocationAndWidget(
+                          context,
+                          myCurrentLocationPlaceItem,
+                          Expanded(
+                            child: NoXWidget(
+                              msg: AppStrings.notFoundLocation.tr(context),
+                              imagePath: ImageAssets.notFoundImgPath,
+                            ),
                           ),
                         );
                       }
@@ -119,8 +140,21 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       else {
                         return Expanded(
                           child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            physics: const BouncingScrollPhysics(),
                             itemCount: state.places.length,
                             itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return Column(
+                                  children: [
+                                    myCurrentLocationPlaceItem ?? Container(),
+                                    PlaceItem(
+                                      placeModel: state.places[index],
+                                      controller: widget.controller,
+                                    ),
+                                  ],
+                                );
+                              }
                               return PlaceItem(
                                 placeModel: state.places[index],
                                 controller: widget.controller,
@@ -136,9 +170,11 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     }
                     //
                     else if (state is SelectLocationLoadingState) {
-                      return Expanded(
-                        child: SizedBox(
-                          height: context.height * 0.70,
+                      return _myLocationAndWidget(
+                        context,
+                        myCurrentLocationPlaceItem,
+                        SizedBox(
+                          height: context.height * 0.60,
                           width: double.infinity,
                           child: const Center(
                             child: CircularProgressIndicator(),
@@ -147,10 +183,14 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       );
                     }
                     //
-                    return Expanded(
-                      child: NoXWidget(
-                        msg: AppStrings.searchForLocation.tr(context),
-                        imagePath: ImageAssets.searchImgPath,
+                    return _myLocationAndWidget(
+                      context,
+                      myCurrentLocationPlaceItem,
+                      Expanded(
+                        child: NoXWidget(
+                          msg: AppStrings.searchForLocation.tr(context),
+                          imagePath: ImageAssets.searchImgPath,
+                        ),
                       ),
                     );
                   },
@@ -190,4 +230,17 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
       },
     );
   }
+}
+
+_myLocationAndWidget(
+    BuildContext context, Widget? nullWidget, Widget mainWidget) {
+  return SizedBox(
+    height: context.height * 0.70,
+    child: Column(
+      children: [
+        nullWidget ?? Container(),
+        mainWidget,
+      ],
+    ),
+  );
 }

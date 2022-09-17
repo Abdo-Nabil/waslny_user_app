@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/core/network/network_info.dart';
@@ -23,7 +22,6 @@ class HomeRemoteData {
   }
 
   Future<List<PlaceModel>> searchForPlace(String value, bool isEnglish) async {
-    debugPrint('333333333333333333333333 search');
     final String language = isEnglish ? 'en' : 'ar';
     String url =
         'https://maps.googleapis.com/maps/api/place/textsearch/json?query=$value&language=$language&key=$mapsApiKey';
@@ -34,16 +32,12 @@ class HomeRemoteData {
       final response = await client.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['status'] == 'OK') {
-          final List results = data['results'];
-          List<PlaceModel> placesList = [];
-          for (var place in results) {
-            placesList.add(PlaceModel.fromJson(place));
-          }
-          return placesList;
-        } else {
-          throw ServerException();
+        final List results = data['results'];
+        List<PlaceModel> placesList = [];
+        for (var place in results) {
+          placesList.add(PlaceModel.fromJson(place));
         }
+        return placesList;
       } else {
         throw ServerException();
       }
@@ -68,14 +62,11 @@ class HomeRemoteData {
       final response = await client.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['status'] == 'OK') {
-          if (data['routes'].isEmpty || data['routes'][0]['legs'].isEmpty) {
-            throw ServerException();
-          }
-          return DirectionModel.fromJson(data);
-        } else {
+
+        if (data['routes'].isEmpty || data['routes'][0]['legs'].isEmpty) {
           throw ServerException();
         }
+        return DirectionModel.fromJson(data);
       } else {
         throw ServerException();
       }
