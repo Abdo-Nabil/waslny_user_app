@@ -17,3 +17,5 @@ class InvalidSmsException implements Exception {}
 class LocationPermissionException implements Exception {}
 
 class TimeLimitException implements Exception {}
+
+class LocationDisabledException implements Exception {}

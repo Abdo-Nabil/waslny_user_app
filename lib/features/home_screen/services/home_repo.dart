@@ -36,6 +36,17 @@ class HomeRepo {
     }
   }
 
+  Either<Failure, Stream<LatLng>> getMyLocationStream() {
+    try {
+      final latLngStream = homeLocalData.getMyLocationStream();
+      return Right(latLngStream);
+    } on TimeLimitException {
+      return Left(TimeLimitFailure());
+    } on LocationDisabledException {
+      return Left(LocationDisabledFailure());
+    }
+  }
+
   Future<Either<Failure, List<PlaceModel>>> searchForPlace(
       String value, bool isEnglish) async {
     try {

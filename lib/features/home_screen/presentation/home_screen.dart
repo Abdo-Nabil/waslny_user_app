@@ -32,6 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   late GoogleMapController _mapsController;
+  // late Stream<LatLng> latLngStream;
+  //
+  @override
+  void initState() {
+    HomeScreenCubit.getIns(context).getMyLocationStream();
+    super.initState();
+  }
+
   //
   @override
   void dispose() {
@@ -105,9 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 color: Colors.blueGrey,
                 child: GoogleMap(
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
                   mapType: MapType.normal,
-                  zoomControlsEnabled: false,
-                  initialCameraPosition: HomeScreenCubit.cairoPosition,
+                  // zoomControlsEnabled: false,
+                  initialCameraPosition: HomeScreenCubit.cairoCameraPosition,
                   onMapCreated: (GoogleMapController controller) async {
                     await HomeScreenCubit.getIns(context)
                         .onMapCreatedCallback(controller);

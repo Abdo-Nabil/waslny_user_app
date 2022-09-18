@@ -61,6 +61,10 @@ class AppStrings {
   static const String startPosition = 'startPosition';
   static const String endPosition = 'endPosition';
   static const String myCurrentLocation = 'myCurrentLocation';
+  static const String myLocation = 'myLocation';
+
+  //
+  //
 
   //
   //

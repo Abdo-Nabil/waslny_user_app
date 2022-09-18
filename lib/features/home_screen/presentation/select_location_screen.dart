@@ -52,7 +52,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 placeModel: PlaceModel(
                   name: AppStrings.myCurrentLocation.tr(context),
                   placeId: 'MyCurrentLocation',
-                  location: HomeScreenCubit.getIns(context).myCurrentLatLng!,
+                  location: HomeScreenCubit.getIns(context).myInitialLatLng ??
+                      HomeScreenCubit.cairoLatLng,
                 ),
               )
             : null;

@@ -17,7 +17,8 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   final HomeRepo homeRepo;
   HomeScreenCubit(this.homeRepo) : super(HomeScreenInitial());
 
-  LatLng? myCurrentLatLng;
+  LatLng? myInitialLatLng;
+  late Stream<LatLng> latLngStream;
   late bool _isOrigin;
   late GoogleMapController mapController;
   Set<Marker> markers = {};
@@ -60,33 +61,32 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
   Future<void> onMapCreatedCallback(GoogleMapController controller) async {
     mapController = controller;
-    await getMyLocationAndAnimateCamera();
+    Stream<LatLng>? stream = await getMyLocationStream();
+    myInitialLatLng = await stream?.first;
+    animateCameraWithUserZoomLevel(myInitialLatLng);
+    stream?.listen(
+      (latLng) async {
+        animateCameraWithUserZoomLevel(latLng);
+      },
+    );
   }
 
-  getMyLocationAndAnimateCamera() async {
-    await getMyLocation();
-    CameraPosition? myCurrentCameraPosition;
-    if (myCurrentLatLng != null) {
-      myCurrentCameraPosition = CameraPosition(
-          target: myCurrentLatLng!, zoom: ConstantsManager.mapZoomLevel);
-    }
+  animateCameraWithUserZoomLevel(LatLng? latLng) async {
+    final userZoomLevel = await mapController.getZoomLevel();
     mapController.animateCamera(
-      CameraUpdate.newCameraPosition(myCurrentCameraPosition ?? cairoPosition),
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: latLng ?? cairoLatLng, zoom: userZoomLevel),
+      ),
     );
   }
 
   void goToHome() {
     //
-    CameraPosition? myCurrentCameraPosition;
-    if (myCurrentLatLng != null) {
-      myCurrentCameraPosition = CameraPosition(
-          target: myCurrentLatLng!, zoom: ConstantsManager.mapZoomLevel);
+    if (myInitialLatLng != null) {
+      animateCameraWithUserZoomLevel(myInitialLatLng);
+    } else {
+      animateCameraWithUserZoomLevel(cairoLatLng);
     }
-    //
-    final cameraPosition = myCurrentCameraPosition ?? cairoPosition;
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(cameraPosition),
-    );
   }
 
   void addMarker(BuildContext context) {
@@ -112,14 +112,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       ),
     );
     if (_isOrigin) {
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: origin,
-            zoom: ConstantsManager.mapZoomLevel,
-          ),
-        ),
-      );
+      animateCameraWithUserZoomLevel(origin);
     }
 
     emit(HomeSuccessWithoutPopState());
@@ -162,7 +155,90 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     );
   }
 
-  Future getMyLocation() async {
+  Future<Stream<LatLng>?> getMyLocationStream() async {
+    //
+    final either = await homeRepo.checkLocationPermissions();
+    bool isOk = false;
+    either.fold(
+      (failure) {
+        emit(HomeFailureState());
+      },
+      (success) {
+        switch (success) {
+          case LocPermission.disabled:
+            emit(OpenLocationSettingState(AppStrings.locationServicesDisabled));
+            break;
+
+          case LocPermission.denied:
+            emit(OpenAppSettingState(AppStrings.locationPermissionsDenied));
+            break;
+
+          case LocPermission.deniedForever:
+            emit(OpenAppSettingState(
+                AppStrings.locationPermissionsDeniedForEver));
+            break;
+          case LocPermission.done:
+            isOk = true;
+            break;
+        }
+      },
+    );
+
+    //
+    if (isOk) {
+      emit(HomeLoadingState());
+      await Future.delayed(Duration(seconds: 3));
+      final isConnected = await homeRepo.isConnected();
+      if (isConnected) {
+        final either = homeRepo.getMyLocationStream();
+
+        return either.fold(
+          (failure) {
+            emit(HomeFailureState());
+            return null;
+          },
+          (success) async {
+            latLngStream = success;
+            emit(HomeSuccessWithPopState());
+            debugPrint('My Location $success');
+            return success;
+          },
+        );
+      }
+      //
+      else {
+        emit(HomeConnectionFailureState());
+        return null;
+      }
+    } else {
+      emit(HomeLocPermissionDeniedState());
+      return null;
+    }
+  }
+  //
+
+  void requestCar(GlobalKey<FormState> formKey) async {
+    if (formKey.currentState!.validate()) {
+      //
+      //request  car
+    }
+  }
+
+  static const LatLng cairoLatLng = LatLng(
+    31.2357116,
+    30.0444196,
+  );
+  static const CameraPosition cairoCameraPosition = CameraPosition(
+    target: LatLng(
+      31.2357116,
+      30.0444196,
+    ),
+    zoom: ConstantsManager.mapZoomLevel,
+  );
+  //
+
+//
+  /* Future getMyLocation() async {
     //
     final either = await homeRepo.checkLocationPermissions();
     bool isOk = false;
@@ -202,8 +278,8 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
           (failure) {
             emit(HomeFailureState());
           },
-          (success) {
-            myCurrentLatLng = LatLng(
+          (success) async {
+            myInitialLatLng = LatLng(
               success.latitude,
               success.longitude,
             );
@@ -219,128 +295,5 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     } else {
       emit(HomeLocPermissionDeniedState());
     }
-  }
-
-  void requestCar(GlobalKey<FormState> formKey) async {
-    if (formKey.currentState!.validate()) {
-      //
-      //request  car
-    }
-  }
-
-  static const CameraPosition cairoPosition = CameraPosition(
-    target: LatLng(
-      31.2357116,
-      30.0444196,
-    ),
-    zoom: ConstantsManager.mapZoomLevel,
-  );
-  //
-
+  }*/
 }
-
-final map = {
-  "geocoded_waypoints": [
-    {
-      "geocoder_status": "OK",
-      "place_id": "ChIJ4bzQkc3O9xQRHDoItU4KZTM",
-      "types": ["premise"]
-    },
-    {
-      "geocoder_status": "OK",
-      "place_id": "ChIJl9lcZFLJ9xQR9NeDOutX1aA",
-      "types": ["premise"]
-    }
-  ],
-  "routes": [
-    {
-      "bounds": {
-        "northeast": {"lat": 30.76239959999999, "lng": 31.0213693},
-        "southwest": {"lat": 30.7468027, "lng": 30.9985918}
-      },
-      "copyrights": "Map data ©2022",
-      "legs": [
-        {
-          "distance": {"text": "3.5 km", "value": 3538},
-          "duration": {"text": "10 mins", "value": 618},
-          "end_address":
-              "QX7X+97M, Nafya, Tanta, Gharbia Governorate 6621101, Egypt",
-          "end_location": {"lat": 30.76239959999999, "lng": 30.9985918},
-          "start_address":
-              "Q22C+8GC, Nafya, Tanta, Gharbia Governorate 6642252, Egypt",
-          "start_location": {"lat": 30.7508909, "lng": 31.021194},
-          "steps": [
-            {
-              "distance": {"text": "23 m", "value": 23},
-              "duration": {"text": "1 min", "value": 4},
-              "end_location": {"lat": 30.7507701, "lng": 31.0209951},
-              "html_instructions": "Head <b>south-west</b>",
-              "polyline": {"points": "a`uzDmyi|DFJNX"},
-              "start_location": {"lat": 30.7508909, "lng": 31.021194},
-              "travel_mode": "DRIVING"
-            },
-            {
-              "distance": {"text": "0.2 km", "value": 223},
-              "duration": {"text": "2 mins", "value": 93},
-              "end_location": {"lat": 30.7488381, "lng": 31.0213693},
-              "html_instructions": "Turn <b>left</b>",
-              "maneuver": "turn-left",
-              "polyline": {
-                "points":
-                    "i_uzDgxi|DNGLGTKBCBAFCp@KFARAH@J@JBj@BNBH?F?B@FAB?DAFAJADAFAB?@A`AW"
-              },
-              "start_location": {"lat": 30.7507701, "lng": 31.0209951},
-              "travel_mode": "DRIVING"
-            },
-            {
-              "distance": {"text": "85 m", "value": 85},
-              "duration": {"text": "1 min", "value": 33},
-              "end_location": {"lat": 30.7486365, "lng": 31.0205177},
-              "html_instructions": "Turn <b>right</b>",
-              "maneuver": "turn-right",
-              "polyline": {"points": "gstzDqzi|DJZBLJb@Hh@@L@PAN?@"},
-              "start_location": {"lat": 30.7488381, "lng": 31.0213693},
-              "travel_mode": "DRIVING"
-            },
-            {
-              "distance": {"text": "0.3 km", "value": 307},
-              "duration": {"text": "2 mins", "value": 107},
-              "end_location": {"lat": 30.7468027, "lng": 31.0182228},
-              "html_instructions": "Slight <b>left</b>",
-              "maneuver": "turn-slight-left",
-              "polyline": {
-                "points":
-                    "_rtzDgui|DTj@N\\LZPNDD@BNNLLHHXVTTDBPLRP@Bf@`@^\\NL\\^HJDFHP@DBJBT@P"
-              },
-              "start_location": {"lat": 30.7486365, "lng": 31.0205177},
-              "travel_mode": "DRIVING"
-            },
-            {
-              "distance": {"text": "2.9 km", "value": 2900},
-              "duration": {"text": "6 mins", "value": 381},
-              "end_location": {"lat": 30.76239959999999, "lng": 30.9985918},
-              "html_instructions": "Turn <b>right</b>",
-              "maneuver": "turn-right",
-              "polyline": {
-                "points":
-                    "oftzD{fi|Du@ZUJiCpAk@XsAp@cAh@cDbBeEvBeCpAkB`AgEvBkB`AcCnAqBbASJwDhBiD|A_CbAuClAQHqAh@sB|@qBz@wAn@u@^eAh@]Ro@^o@`@]VKLMPEFQZA@a@z@Qb@Oh@G`@?@CZCb@Ab@?PAzBCpB?d@AjACfD?jCEtCKzJAbCCzCAlB?|@?n@Cl@?DEd@Gd@G^"
-              },
-              "start_location": {"lat": 30.7468027, "lng": 31.0182228},
-              "travel_mode": "DRIVING"
-            }
-          ],
-          "traffic_speed_entry": [],
-          "via_waypoint": []
-        }
-      ],
-      "overview_polyline": {
-        "points":
-            "a`uzDmyi|DVd@\\Od@Ux@M\\?rAL\\?PC\\EbAYNh@TlAB^APd@hALZPNFH`A~@jC|B|@`AJVF`@@Pu@Z_D|AgJxE_SbKuJ`FaJfEuGpCiIlDmCnAcB|@_B`Ai@d@g@v@s@~AWjAIdBEdHErFE`HShWC`DUjB"
-      },
-      "summary": "",
-      "warnings": [],
-      "waypoint_order": []
-    }
-  ],
-  "status": "OK"
-};

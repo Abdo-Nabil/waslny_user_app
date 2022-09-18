@@ -9,4 +9,5 @@ class ConstantsManager {
   static const double mapPadding = 100;
   static const int searchDelay = 2000;
   static const int locationTimeLimit = 10;
+  static const int minDistanceToUpdate = 5;
 }

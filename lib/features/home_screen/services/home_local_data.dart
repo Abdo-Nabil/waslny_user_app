@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -51,8 +53,29 @@ class HomeLocalData {
         timeLimit: const Duration(seconds: ConstantsManager.locationTimeLimit),
       );
       return LatLng(position.latitude, position.longitude);
-    } catch (e) {
+    } on TimeoutException {
       throw TimeLimitException();
+    } on LocationServiceDisabledException {
+      throw LocationDisabledException();
+    }
+  }
+
+  Stream<LatLng> getMyLocationStream() {
+    try {
+      const LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: ConstantsManager.minDistanceToUpdate,
+        // timeLimit: Duration(seconds: ConstantsManager.locationTimeLimit),
+      );
+      //
+      Stream<LatLng> latLngStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .map((position) => LatLng(position.latitude, position.longitude));
+      return latLngStream;
+    } on TimeoutException {
+      throw TimeLimitException();
+    } on LocationServiceDisabledException {
+      throw LocationDisabledException();
     }
   }
 }

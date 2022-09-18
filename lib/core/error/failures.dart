@@ -51,3 +51,8 @@ class TimeLimitFailure extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class LocationDisabledFailure extends Failure {
+  @override
+  List<Object?> get props => [];
+}
