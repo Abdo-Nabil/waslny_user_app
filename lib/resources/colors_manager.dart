@@ -4,7 +4,8 @@ import '../core/util/hex_color.dart';
 
 class ColorsManager {
   static const Color whiteColor = Colors.white;
-  static const Color geryColor = Colors.grey;
+  static const Color greyColor = Colors.grey;
+  static Color greyColorShade200 = Colors.grey.shade200;
   static const Color redColor = Colors.red;
   static const Color greenColor = Colors.greenAccent;
   static Color yellowAccent = Colors.yellowAccent;

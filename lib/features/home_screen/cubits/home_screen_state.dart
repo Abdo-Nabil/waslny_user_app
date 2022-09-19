@@ -91,3 +91,10 @@ class OpenLocationSettingState extends HomeScreenState {
   @override
   List<Object> get props => [identityHashCode(this)];
 }
+
+class HomeRefreshMarkerState extends HomeScreenState {
+  final String latLng;
+  const HomeRefreshMarkerState(this.latLng);
+  @override
+  List<Object> get props => [latLng];
+}

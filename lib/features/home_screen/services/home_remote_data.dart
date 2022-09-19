@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/core/network/network_info.dart';
@@ -55,6 +56,7 @@ class HomeRemoteData {
     //
     String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=$origin&destination=$destination&language=$language&key=$mapsApiKey';
+    debugPrint(url);
     final isConnected = await networkInfo.isConnected;
     //
     if (isConnected) {

@@ -7,6 +7,7 @@ import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/features/home_screen/services/direction_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
+import 'package:waslny_user/resources/image_assets.dart';
 
 import '../../../resources/app_strings.dart';
 import '../services/home_local_data.dart';
@@ -18,6 +19,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   HomeScreenCubit(this.homeRepo) : super(HomeScreenInitial());
 
   LatLng? myInitialLatLng;
+  late LatLng myCurrentLatLng;
   late Stream<LatLng> latLngStream;
   late bool _isOrigin;
   late GoogleMapController mapController;
@@ -26,6 +28,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   late LatLng origin;
   late LatLng destination;
   DirectionModel? directionModel;
+  late BitmapDescriptor markerCustomIcon;
 
   getIsOrigin() {
     return _isOrigin;
@@ -59,23 +62,53 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     }
   }
 
-  Future<void> onMapCreatedCallback(GoogleMapController controller) async {
-    mapController = controller;
-    Stream<LatLng>? stream = await getMyLocationStream();
-    myInitialLatLng = await stream?.first;
-    animateCameraWithUserZoomLevel(myInitialLatLng);
-    stream?.listen(
-      (latLng) async {
-        animateCameraWithUserZoomLevel(latLng);
-      },
+  Marker _getCurrentLocationMarker(LatLng latLng) {
+    return Marker(
+      markerId: const MarkerId('current location marker'),
+      position: latLng,
+      icon: markerCustomIcon,
     );
   }
 
-  animateCameraWithUserZoomLevel(LatLng? latLng) async {
+  Future<void> onMapCreatedCallback(GoogleMapController controller) async {
+    mapController = controller;
+    markerCustomIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration.empty, ImageAssets.markerImgPath);
+    //
+    Stream<LatLng>? stream = await getMyLocationStream();
+    if (stream != null) {
+      //
+      myInitialLatLng = await stream.first;
+      myCurrentLatLng = myInitialLatLng!;
+      //TODO: hint null value above
+      markers.add(_getCurrentLocationMarker(myCurrentLatLng));
+      emit(HomeRefreshMarkerState('$myCurrentLatLng'));
+      animateCameraWithUserZoomLevel(myInitialLatLng!);
+      stream.listen(
+        (latLng) async {
+          markers.remove(_getCurrentLocationMarker(myCurrentLatLng));
+          myCurrentLatLng = latLng;
+          markers.add(_getCurrentLocationMarker(myCurrentLatLng));
+          animateCameraWithUserZoomLevel(latLng);
+
+          emit(HomeRefreshMarkerState('$latLng'));
+        },
+      );
+      //
+    } else {
+      animateCameraWithUserZoomLevel(cairoLatLng);
+    }
+  }
+
+  getDistanceBetween(LatLng origin, LatLng destination) {
+    final distanceInMetres = homeRepo.getDistanceBetween(origin, destination);
+  }
+
+  animateCameraWithUserZoomLevel(LatLng latLng) async {
     final userZoomLevel = await mapController.getZoomLevel();
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(target: latLng ?? cairoLatLng, zoom: userZoomLevel),
+        CameraPosition(target: latLng, zoom: userZoomLevel),
       ),
     );
   }
@@ -83,7 +116,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   void goToHome() {
     //
     if (myInitialLatLng != null) {
-      animateCameraWithUserZoomLevel(myInitialLatLng);
+      animateCameraWithUserZoomLevel(myInitialLatLng!);
     } else {
       animateCameraWithUserZoomLevel(cairoLatLng);
     }
@@ -166,14 +199,17 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       (success) {
         switch (success) {
           case LocPermission.disabled:
+            // ignore: prefer_const_constructors
             emit(OpenLocationSettingState(AppStrings.locationServicesDisabled));
             break;
 
           case LocPermission.denied:
+            // ignore: prefer_const_constructors
             emit(OpenAppSettingState(AppStrings.locationPermissionsDenied));
             break;
 
           case LocPermission.deniedForever:
+            // ignore: prefer_const_constructors
             emit(OpenAppSettingState(
                 AppStrings.locationPermissionsDeniedForEver));
             break;
@@ -187,7 +223,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     //
     if (isOk) {
       emit(HomeLoadingState());
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       final isConnected = await homeRepo.isConnected();
       if (isConnected) {
         final either = homeRepo.getMyLocationStream();

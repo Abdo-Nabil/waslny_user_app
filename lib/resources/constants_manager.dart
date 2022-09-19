@@ -3,7 +3,7 @@ class ConstantsManager {
   static const int sliderAnimationTime = 300;
   static const int smsTimer = 10;
   static const int pinCodesLength = 6;
-  static const double mapZoomLevel = 13.5;
+  static const double mapZoomLevel = 15;
   static const int polyLineWidth = 5;
   static const int noXWidgetAnimationDuration = 500;
   static const double mapPadding = 100;

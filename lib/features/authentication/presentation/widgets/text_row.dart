@@ -37,7 +37,7 @@ class TextRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                         color: showResendButton
                             ? ColorsManager.primary
-                            : ColorsManager.geryColor,
+                            : ColorsManager.greyColor,
                       ),
                 ),
                 onTap: () {

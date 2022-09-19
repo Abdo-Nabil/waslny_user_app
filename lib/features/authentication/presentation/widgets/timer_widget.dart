@@ -64,7 +64,7 @@ class _TimerWidgetState extends State<TimerWidget> {
               : Theme.of(context)
                   .textTheme
                   .subtitle2!
-                  .copyWith(color: ColorsManager.geryColor),
+                  .copyWith(color: ColorsManager.greyColor),
         );
       },
     );

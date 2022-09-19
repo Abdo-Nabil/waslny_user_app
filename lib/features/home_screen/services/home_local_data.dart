@@ -78,4 +78,9 @@ class HomeLocalData {
       throw LocationDisabledException();
     }
   }
+
+  double getDistanceBetween(LatLng origin, LatLng destination) {
+    return Geolocator.distanceBetween(origin.latitude, origin.longitude,
+        destination.latitude, destination.longitude);
+  }
 }

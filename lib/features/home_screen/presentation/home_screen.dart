@@ -116,7 +116,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   mapType: MapType.normal,
-                  // zoomControlsEnabled: false,
                   initialCameraPosition: HomeScreenCubit.cairoCameraPosition,
                   onMapCreated: (GoogleMapController controller) async {
                     await HomeScreenCubit.getIns(context)
@@ -161,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: Text(
-                          '${directionModel.distance}, ${directionModel.duration} ',
+                          '${directionModel.distance}, ${directionModel.duration}',
                           style: TextStyle(
                             fontSize: FontSize.s20,
                             color: ColorsManager.greyBlack,

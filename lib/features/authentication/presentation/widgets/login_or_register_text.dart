@@ -14,7 +14,7 @@ class LoginOrRegisterText extends StatelessWidget {
       style: Theme.of(context)
           .textTheme
           .headline5
-          ?.copyWith(color: ColorsManager.geryColor),
+          ?.copyWith(color: ColorsManager.greyColor),
     );
   }
 }

@@ -81,4 +81,8 @@ class HomeRepo {
       return Left(ServerFailure());
     }
   }
+
+  double getDistanceBetween(LatLng origin, LatLng destination) {
+    return homeLocalData.getDistanceBetween(origin, destination);
+  }
 }

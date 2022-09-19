@@ -6,6 +6,7 @@ class ImageAssets {
   static const String authOtpImgPath = '$imagePath/otp.png';
   static const String searchImgPath = '$imagePath/search_location.png';
   static const String notFoundImgPath = '$imagePath/not_found.png';
+  static const String markerImgPath = '$imagePath/marker.png';
 
   static const String splashLogo = "$imagePath/splash_logo.png";
   static const String onboardingLogo1 = "$imagePath/onboarding_logo1.svg";
