@@ -9,13 +9,6 @@ class HomeScreenInitial extends HomeScreenState {
   List<Object> get props => [];
 }
 
-class DialogMessageState extends HomeScreenState {
-  final String msg;
-  const DialogMessageState(this.msg);
-  @override
-  List<Object> get props => [identityHashCode(this)];
-}
-
 class HomeLoadingState extends HomeScreenState {
   @override
   List<Object> get props => [];
@@ -31,7 +24,17 @@ class HomeSuccessWithoutPopState extends HomeScreenState {
   List<Object> get props => [];
 }
 
-class HomeFailureState extends HomeScreenState {
+class HomeServerFailureWithPopState extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}
+
+class HomeConnectionFailureWithPopState extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}
+
+class HomeFailureWithoutPopState extends HomeScreenState {
   @override
   List<Object> get props => [];
 }
@@ -46,36 +49,11 @@ class HomeLocPermissionDeniedState extends HomeScreenState {
   List<Object> get props => [];
 }
 
-class AState extends HomeScreenState {
+class HomeRefreshMarkerState extends HomeScreenState {
+  final String latLng;
+  const HomeRefreshMarkerState(this.latLng);
   @override
-  List<Object> get props => [];
-}
-
-class SelectLocationLoadingState extends HomeScreenState {
-  @override
-  List<Object> get props => [];
-}
-
-class SelectLocationDoneState extends HomeScreenState {
-  @override
-  List<Object> get props => [];
-}
-
-class SelectLocationFailureState extends HomeScreenState {
-  @override
-  List<Object> get props => [];
-}
-
-class SearchPlaceSuccessState extends HomeScreenState {
-  final List places;
-  const SearchPlaceSuccessState(this.places);
-  @override
-  List<Object> get props => [places];
-}
-
-class SearchPlaceFailureState extends HomeScreenState {
-  @override
-  List<Object> get props => [];
+  List<Object> get props => [latLng];
 }
 
 class OpenAppSettingState extends HomeScreenState {
@@ -92,9 +70,27 @@ class OpenLocationSettingState extends HomeScreenState {
   List<Object> get props => [identityHashCode(this)];
 }
 
-class HomeRefreshMarkerState extends HomeScreenState {
-  final String latLng;
-  const HomeRefreshMarkerState(this.latLng);
+//Location screen states
+//
+
+class SelectLocationLoadingState extends HomeScreenState {
   @override
-  List<Object> get props => [latLng];
+  List<Object> get props => [];
+}
+
+class SearchPlaceSuccessState extends HomeScreenState {
+  final List places;
+  const SearchPlaceSuccessState(this.places);
+  @override
+  List<Object> get props => [places];
+}
+
+class SearchPlaceConnectionFailureState extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}
+
+class SearchPlaceServerFailureState extends HomeScreenState {
+  @override
+  List<Object> get props => [];
 }

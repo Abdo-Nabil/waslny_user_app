@@ -167,7 +167,25 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     }
 
                     //
-                    else if (state is SearchPlaceFailureState) {
+                    else if (state is SearchPlaceServerFailureState) {
+                      return Expanded(
+                        child: NoXWidget(
+                          msg: AppStrings.someThingWentWrong.tr(context),
+                          imagePath: ImageAssets.alertImgPath,
+                        ),
+                      );
+                    }
+                    //
+                    else if (state is SearchPlaceConnectionFailureState) {
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppPadding.p30),
+                          child: NoXWidget(
+                            msg: AppStrings.internetConnectionError.tr(context),
+                            imagePath: ImageAssets.noInternetConnectionImgPath,
+                          ),
+                        ),
+                      );
                     }
                     //
                     else if (state is SelectLocationLoadingState) {

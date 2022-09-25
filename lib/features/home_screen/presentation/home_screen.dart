@@ -79,8 +79,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 context, AppStrings.givePermission.tr(context));
           }
           //
-          else if (state is HomeFailureState) {
+          else if (state is HomeServerFailureWithPopState) {
             Navigator.pop(context);
+            DialogHelper.messageDialog(
+                context, AppStrings.someThingWentWrong.tr(context));
+          }
+          //
+          else if (state is HomeConnectionFailureWithPopState) {
+            Navigator.pop(context);
+            DialogHelper.messageDialog(
+                context, AppStrings.internetConnectionError.tr(context));
+          }
+          //
+          else if (state is HomeFailureWithoutPopState) {
             DialogHelper.messageDialog(
                 context, AppStrings.someThingWentWrong.tr(context));
           }

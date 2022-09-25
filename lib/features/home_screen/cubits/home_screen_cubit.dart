@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/features/home_screen/services/direction_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
@@ -160,7 +161,11 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
       final either = await homeRepo.searchForPlace(value, isEnglish);
       either.fold((failure) {
-        emit(SearchPlaceFailureState());
+        if (failure.runtimeType == ServerFailure) {
+          emit(SearchPlaceServerFailureState());
+        } else if (failure.runtimeType == OfflineFailure) {
+          emit(SearchPlaceConnectionFailureState());
+        }
       }, (success) {
         emit(SearchPlaceSuccessState(success));
       });
@@ -176,7 +181,11 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     final either = await homeRepo.getDirections(origin, destination, isEnglish);
     either.fold(
       (failure) {
-        emit(HomeFailureState());
+        if (failure.runtimeType == ServerFailure) {
+          emit(HomeServerFailureWithPopState());
+        } else if (failure.runtimeType == OfflineFailure) {
+          emit(HomeConnectionFailureWithPopState());
+        }
       },
       (success) {
         directionModel = success;
@@ -194,7 +203,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     bool isOk = false;
     either.fold(
       (failure) {
-        emit(HomeFailureState());
+        emit(HomeFailureWithoutPopState());
       },
       (success) {
         switch (success) {
@@ -230,7 +239,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
         return either.fold(
           (failure) {
-            emit(HomeFailureState());
+            emit(HomeServerFailureWithPopState());
             return null;
           },
           (success) async {
@@ -265,10 +274,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     30.0444196,
   );
   static const CameraPosition cairoCameraPosition = CameraPosition(
-    target: LatLng(
-      31.2357116,
-      30.0444196,
-    ),
+    target: cairoLatLng,
     zoom: ConstantsManager.mapZoomLevel,
   );
   //
@@ -280,7 +286,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     bool isOk = false;
     either.fold(
       (failure) {
-        emit(HomeFailureState());
+        emit(HomeFailureWithoutPopState());
       },
       (success) {
         switch (success) {
@@ -312,7 +318,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
         either.fold(
           (failure) {
-            emit(HomeFailureState());
+            emit(HomeFailureWithPopState());
           },
           (success) async {
             myInitialLatLng = LatLng(

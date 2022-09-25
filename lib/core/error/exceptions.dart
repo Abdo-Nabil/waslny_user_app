@@ -14,6 +14,8 @@ class LoginVerificationFailedException implements Exception {}
 
 class InvalidSmsException implements Exception {}
 
+//location permissions
+
 class LocationPermissionException implements Exception {}
 
 class TimeLimitException implements Exception {}

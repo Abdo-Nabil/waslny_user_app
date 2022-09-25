@@ -14,9 +14,7 @@ class HomeRepo {
   final HomeLocalData homeLocalData;
   HomeRepo(this.homeRemoteData, this.homeLocalData);
 
-  Future<bool> isConnected() async {
-    return await homeRemoteData.isConnected();
-  }
+  //-----------------Local data source-----------------
 
   Future<Either<Failure, LocPermission>> checkLocationPermissions() async {
     try {
@@ -33,6 +31,8 @@ class HomeRepo {
       return Right(latLng);
     } on TimeLimitException {
       return Left(TimeLimitFailure());
+    } on LocationDisabledException {
+      return Left(LocationDisabledFailure());
     }
   }
 
@@ -45,6 +45,14 @@ class HomeRepo {
     } on LocationDisabledException {
       return Left(LocationDisabledFailure());
     }
+  }
+
+  //
+  //
+  //-----------------Remote data source-----------------
+
+  Future<bool> isConnected() async {
+    return await homeRemoteData.isConnected();
   }
 
   Future<Either<Failure, List<PlaceModel>>> searchForPlace(
