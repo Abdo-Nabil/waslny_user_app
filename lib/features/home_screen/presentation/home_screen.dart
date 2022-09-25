@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 color: Colors.blueGrey,
                 child: GoogleMap(
-                  myLocationEnabled: true,
+                  myLocationEnabled: false,
                   myLocationButtonEnabled: false,
                   mapType: MapType.normal,
                   initialCameraPosition: HomeScreenCubit.cairoCameraPosition,
@@ -239,6 +239,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const Icon(Icons.add_location_alt_outlined),
                                 controller: _fromController,
                                 onTap: () {
+                                  HomeScreenCubit.getIns(context)
+                                      .fromController = _fromController;
                                   HomeScreenCubit.getIns(context).setOrigin();
                                   HomeScreenCubit.getIns(context)
                                       .emitInitialState();
@@ -260,6 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const Icon(Icons.add_location_alt_outlined),
                                 controller: _toController,
                                 onTap: () {
+                                  HomeScreenCubit.getIns(context).toController =
+                                      _toController;
                                   HomeScreenCubit.getIns(context).clearOrigin();
                                   HomeScreenCubit.getIns(context)
                                       .emitInitialState();

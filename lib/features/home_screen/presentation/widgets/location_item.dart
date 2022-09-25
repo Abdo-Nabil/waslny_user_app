@@ -46,10 +46,12 @@ class PlaceItem extends StatelessWidget {
     final bool isOrigin = HomeScreenCubit.getIns(context).getIsOrigin();
     Navigator.of(context).pop();
     if (isOrigin) {
+      HomeScreenCubit.getIns(context).toController?.clear();
       HomeScreenCubit.getIns(context).origin = placeModel.location;
-      HomeScreenCubit.getIns(context).addMarker(context);
+      HomeScreenCubit.getIns(context).addOrgOrDesMarker(context);
     } else {
       HomeScreenCubit.getIns(context).destination = placeModel.location;
+      HomeScreenCubit.getIns(context).addOrgOrDesMarker(context);
       HomeScreenCubit.getIns(context).getDirections(context, isEnglishLocale);
     }
   }

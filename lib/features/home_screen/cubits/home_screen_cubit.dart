@@ -28,8 +28,12 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   List<LatLng> polyLinePointsList = [];
   late LatLng origin;
   late LatLng destination;
+  Marker? originMarker;
+  Marker? destinationMarker;
   DirectionModel? directionModel;
   late BitmapDescriptor markerCustomIcon;
+  TextEditingController? toController;
+  TextEditingController? fromController;
 
   getIsOrigin() {
     return _isOrigin;
@@ -123,33 +127,42 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     }
   }
 
-  void addMarker(BuildContext context) {
-    //TODO: need more
-    late LatLng point;
+  void addOrgOrDesMarker(BuildContext context) {
     if (_isOrigin) {
-      point = origin;
-    } else {
-      point = destination;
-    }
-    markers.add(
-      Marker(
-        markerId: MarkerId('${point.latitude + point.longitude}'),
+      //
+      originMarker != null ? markers.remove(originMarker) : () {};
+      destinationMarker != null ? markers.remove(destinationMarker) : () {};
+      polyLinePointsList.clear();
+      //
+      originMarker = Marker(
+        markerId: const MarkerId('origin'),
         icon: BitmapDescriptor.defaultMarkerWithHue(
-          _isOrigin ? BitmapDescriptor.hueRed : BitmapDescriptor.hueGreen,
+          BitmapDescriptor.hueRed,
+        ),
+        infoWindow: InfoWindow(title: AppStrings.startPosition.tr(context)),
+        position: origin,
+      );
+      markers.add(
+        originMarker!,
+      );
+      animateCameraWithUserZoomLevel(origin);
+      emit(HomeSuccessWithoutPopState());
+    } else {
+      destinationMarker = Marker(
+        markerId: const MarkerId('destination'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueGreen,
         ),
         infoWindow: InfoWindow(
-          title: _isOrigin
-              ? AppStrings.startPosition.tr(context)
-              : AppStrings.endPosition.tr(context),
+          title: AppStrings.endPosition.tr(context),
         ),
-        position: point,
-      ),
-    );
-    if (_isOrigin) {
-      animateCameraWithUserZoomLevel(origin);
+        position: destination,
+      );
+      markers.add(
+        destinationMarker!,
+      );
+      emit(HomeSuccessWithoutPopState());
     }
-
-    emit(HomeSuccessWithoutPopState());
   }
 
   Future searchForPlace(
@@ -173,7 +186,6 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   }
 
   Future getDirections(BuildContext context, bool isEnglish) async {
-    addMarker(context);
     //
     emit(HomeLoadingState());
     await Future.delayed(const Duration(seconds: 3));
