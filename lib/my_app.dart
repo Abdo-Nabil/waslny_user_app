@@ -4,13 +4,13 @@ import 'package:waslny_user/features/authentication/presentation/cubits/auth_cub
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
-import 'package:waslny_user/features/theme/presentation/cubits/theme_cubit.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 
 import 'config/routes/app_routes.dart';
 import 'features/home_screen/presentation/home_screen.dart';
 import 'features/localization/locale/app_localizations_setup.dart';
 import 'features/theme/app_theme.dart';
+import 'features/theme/cubits/theme_cubit.dart';
 import 'injection_container.dart';
 
 class MyApp extends StatelessWidget {

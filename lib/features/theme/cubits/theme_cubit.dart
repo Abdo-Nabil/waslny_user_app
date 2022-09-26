@@ -1,59 +1,59 @@
-import 'package:dartz/dartz.dart';
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waslny_user/features/theme/data/models/theme_model.dart';
 
 import '../../../../resources/app_strings.dart';
 
-abstract class ThemeLocalDataSource {
-  ThemeModel getTheme();
-  Future<Unit> setTheme(ThemeModel themeModel);
-}
+part 'theme_state.dart';
 
-class ThemeLocalDataSourceImpl implements ThemeLocalDataSource {
+class ThemeCubit extends Cubit<ThemeState> {
   final SharedPreferences sharedPreferences;
-  const ThemeLocalDataSourceImpl({required this.sharedPreferences});
+  ThemeCubit({required this.sharedPreferences}) : super(ThemeInitial());
 
-  @override
-  ThemeModel getTheme() {
+  late ThemeMode selectedThemeMode;
+
+  getTheme() {
     final bool? isLightTheme =
         sharedPreferences.getBool(AppStrings.isLightTheme);
     if (isLightTheme != null) {
-      if (isLightTheme) {
-        return const ThemeModel(themeMode: ThemeMode.light);
-      } else {
-        return const ThemeModel(themeMode: ThemeMode.dark);
-      }
+      isLightTheme
+          ? selectedThemeMode = ThemeMode.light
+          : selectedThemeMode = ThemeMode.dark;
     }
     //
     else {
-      return const ThemeModel(themeMode: ThemeMode.system);
+      selectedThemeMode = ThemeMode.system;
     }
   }
 
-  @override
-  Future<Unit> setTheme(ThemeModel themeModel) async {
-    switch (themeModel.themeMode) {
+  setTheme(ThemeMode themeMode) async {
+    switch (themeMode) {
       //
       case ThemeMode.system:
         {
           await sharedPreferences.remove(AppStrings.isLightTheme);
+          selectedThemeMode = ThemeMode.system;
+          emit(ThemeChangedState(themeMode));
         }
         break;
       //
       case ThemeMode.light:
         {
           await sharedPreferences.setBool(AppStrings.isLightTheme, true);
+          selectedThemeMode = ThemeMode.light;
+          emit(ThemeChangedState(themeMode));
         }
         break;
       //
       case ThemeMode.dark:
         {
           await sharedPreferences.setBool(AppStrings.isLightTheme, false);
+          selectedThemeMode = ThemeMode.dark;
+          emit(ThemeChangedState(themeMode));
         }
         break;
       //
     }
-    return Future.value(unit);
   }
 }

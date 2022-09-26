@@ -15,7 +15,6 @@ import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/features/localization/data/datasources/localization_local_data_source.dart';
 import 'package:waslny_user/features/localization/domain/repositories/localization_repository.dart';
 import 'package:waslny_user/features/localization/domain/usecases/get_locale_use_case.dart';
-import 'package:waslny_user/features/theme/presentation/cubits/theme_cubit.dart';
 
 import 'core/network/network_info.dart';
 import 'features/authentication/domain/usecases/create_user_use_case.dart';
@@ -30,11 +29,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/localization/domain/usecases/set_to_system_locale.dart';
 import 'features/localization/presentation/cubits/localization_cubit.dart';
-import 'features/theme/data/datasources/theme_local_data_source.dart';
-import 'features/theme/data/repositories/theme_repository_impl.dart';
-import 'features/theme/domain/repositories/theme_repository.dart';
-import 'features/theme/domain/usecases/get_theme_use_case.dart';
-import 'features/theme/domain/usecases/set_theme_use_case.dart';
+import 'features/theme/cubits/theme_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -94,27 +89,12 @@ Future<void> initTheme() async {
 
 //! Bloc
 
-  sl.registerFactory(
-      () => ThemeCubit(getThemeUseCase: sl(), setThemeUseCase: sl()));
+  sl.registerFactory(() => ThemeCubit(sharedPreferences: sl()));
 
 //! Use Cases
-
-  sl.registerLazySingleton(() => GetThemeUseCase(themeRepository: sl()));
-  sl.registerLazySingleton(() => SetThemeUseCase(themeRepository: sl()));
-
 //! Repository
-
-  sl.registerLazySingleton<ThemeRepository>(
-    () => ThemeRepositoryImpl(themeLocalDataSource: sl()),
-  );
-
 //! Data Sources
-
-  sl.registerLazySingleton<ThemeLocalDataSource>(
-      () => ThemeLocalDataSourceImpl(sharedPreferences: sl()));
-
 //! Core
-
 //! External
 
   //****** These lines have been implemented in Localization Feature ******
