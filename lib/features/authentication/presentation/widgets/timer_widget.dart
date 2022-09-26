@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/resources/colors_manager.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
+
+import '../../cubits/auth_cubit.dart';
 
 class TimerWidget extends StatefulWidget {
   const TimerWidget({Key? key}) : super(key: key);

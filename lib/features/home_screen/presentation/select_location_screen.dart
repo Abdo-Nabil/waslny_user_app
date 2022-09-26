@@ -6,7 +6,7 @@ import 'package:waslny_user/core/widgets/no_x_widget.dart';
 import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/location_item.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/search_container.dart';
-import 'package:waslny_user/features/home_screen/services/place_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 

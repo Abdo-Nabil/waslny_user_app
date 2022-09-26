@@ -3,8 +3,8 @@ import 'package:dartz/dartz.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/core/error/failures.dart';
-import 'package:waslny_user/features/home_screen/services/direction_model.dart';
-import 'package:waslny_user/features/home_screen/services/place_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/direction_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_remote_data.dart';
 
 import 'home_local_data.dart';

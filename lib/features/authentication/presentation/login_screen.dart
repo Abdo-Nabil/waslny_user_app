@@ -4,7 +4,6 @@ import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/util/navigator_helper.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
 import 'package:waslny_user/core/widgets/custom_form_field.dart';
-import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/image_with_logo.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/login_or_register_text.dart';
@@ -14,6 +13,7 @@ import 'package:waslny_user/resources/app_margins_paddings.dart';
 
 import '../../../core/util/dialog_helper.dart';
 import '../../../resources/colors_manager.dart';
+import '../cubits/auth_cubit.dart';
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {

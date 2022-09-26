@@ -13,7 +13,7 @@ import '../../../core/widgets/custom_form_field.dart';
 import '../../../resources/app_strings.dart';
 import '../../../resources/colors_manager.dart';
 import '../../../resources/app_margins_paddings.dart';
-import 'cubits/auth_cubit.dart';
+import '../cubits/auth_cubit.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);

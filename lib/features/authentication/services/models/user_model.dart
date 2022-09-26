@@ -1,14 +1,18 @@
-import 'package:waslny_user/features/authentication/data/models/trip_model.dart';
-import 'package:waslny_user/features/authentication/domain/entities/user_entity.dart';
+import 'package:equatable/equatable.dart';
 
-class UserModel extends UserEntity {
-  final List<TripModel>? tripsModel;
+import './trip_model.dart';
+
+class UserModel extends Equatable {
+  final String userId;
+  final String phoneNumber;
+  final String? name;
+  final List<TripModel>? trips;
+
   const UserModel({
-    required super.userId,
-    required super.phoneNumber,
-    super.name,
-    super.tripsEntity,
-    this.tripsModel,
+    required this.userId,
+    required this.phoneNumber,
+    this.name,
+    this.trips,
   });
 
   @override
@@ -16,8 +20,7 @@ class UserModel extends UserEntity {
         userId,
         name,
         phoneNumber,
-        tripsModel,
-        tripsEntity,
+        trips,
       ];
 
   factory UserModel.fromJson(Map<String, dynamic> map) {
@@ -32,15 +35,15 @@ class UserModel extends UserEntity {
       userId: map['userId'],
       phoneNumber: map['phoneNumber'],
       name: map['name'],
-      tripsModel: trips,
+      trips: trips,
     );
   }
   //
   Map<String, dynamic> toJson() {
     final List<Map<String, dynamic>> listOfMaps = [];
 
-    if (tripsModel != null) {
-      for (TripModel element in tripsModel!) {
+    if (trips != null) {
+      for (TripModel element in trips!) {
         listOfMaps.add(element.toJson());
       }
     }

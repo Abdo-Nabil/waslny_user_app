@@ -6,35 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
-import 'package:waslny_user/features/authentication/domain/usecases/get_token_use_case.dart';
-import 'package:waslny_user/features/authentication/domain/usecases/login_or_resend_sms_use_case.dart';
-import 'package:waslny_user/features/authentication/domain/usecases/set_token_use_case.dart';
-import 'package:waslny_user/features/authentication/domain/usecases/verify_sms_code_use_case.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../resources/constants_manager.dart';
-import '../../domain/usecases/create_user_use_case.dart';
-import '../../domain/usecases/get_user_data_use_case.dart';
-import '../../domain/usecases/verify_sms_code_use_case.dart';
+import '../services/auth_repo.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final CreateUserUseCase createUserUseCase;
-  final GetUserDataUseCase getUserDataUseCase;
-  final LoginOrResendSmsUseCase loginOrResendSmsUseCase;
-  final VerifySmsCodeUseCase verifySmsCodeUseCase;
-  final GetTokenUseCase getTokenUseCase;
-  final SetTokenUseCase setTokenUseCase;
+  final AuthRepo authRepo;
 
   AuthCubit({
-    required this.createUserUseCase,
-    required this.getUserDataUseCase,
-    required this.loginOrResendSmsUseCase,
-    required this.verifySmsCodeUseCase,
-    required this.getTokenUseCase,
-    required this.setTokenUseCase,
+    required this.authRepo,
   }) : super(AuthInitial());
 
   bool showLoginButton = false;
@@ -121,6 +105,8 @@ class AuthCubit extends Cubit<AuthState> {
       emit(EndLoadingStateWithError(AppStrings.someThingWentWrong));
     } else if (failure.runtimeType == InvalidSmsFailure) {
       emit(EndLoadingStateWithSmsError());
+    } else if (failure.runtimeType == CacheSavingFailure) {
+      emit(EndLoadingStateWithError(AppStrings.savingTokenError));
     }
   }
 
@@ -128,7 +114,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(StartLoadingState());
     debugPrint(phoneNumber);
     await Future.delayed(const Duration(seconds: 3));
-    final result = await loginOrResendSmsUseCase(phoneNumber);
+    final result = await authRepo.loginOrResendSms(phoneNumber);
     result.fold(
       (failure) {
         handleFailure(failure);
@@ -140,15 +126,26 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  Future saveToken() async {
+  Future<bool> _saveToken() async {
     final token = await userCred.user?.getIdToken();
-    await setTokenUseCase.call(token!);
+    if (token != null) {
+      final either = await authRepo.setToken(token);
+      return either.fold((failure) {
+        handleFailure(failure);
+        return false;
+      }, (success) {
+        return true;
+      });
+    } else {
+      debugPrint('The token is nullllllllllll!');
+      return false;
+    }
   }
 
   Future verifySmsCode(String smsCode, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
-      final result = await verifySmsCodeUseCase(smsCode);
+      final result = await authRepo.verifySmsCode(smsCode);
       result.fold(
         (failure) {
           handleFailure(failure);
@@ -156,11 +153,13 @@ class AuthCubit extends Cubit<AuthState> {
         (userCredential) async {
           //
           userCred = userCredential;
-          if (userCredential.additionalUserInfo.isNewUser) {
+          if (userCredential.additionalUserInfo!.isNewUser) {
             emit(EndLoadingToRegisterScreen());
           } else {
-            await saveToken();
-            emit(EndLoadingToHomeScreen());
+            final isSaved = await _saveToken();
+            if (isSaved) {
+              emit(EndLoadingToHomeScreen());
+            }
           }
         },
       );
@@ -175,14 +174,16 @@ class AuthCubit extends Cubit<AuthState> {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
       await Future.delayed(const Duration(seconds: 3));
-      final result = await createUserUseCase.call(username.text);
+      final result = await authRepo.createUser(username.text);
       result.fold(
         (failure) {
           handleFailure(failure);
         },
         (success) async {
-          await saveToken();
-          emit(EndLoadingToHomeScreen());
+          final isSaved = await _saveToken();
+          if (isSaved) {
+            emit(EndLoadingToHomeScreen());
+          }
         },
       );
     }

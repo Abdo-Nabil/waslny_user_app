@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:waslny_user/features/home_screen/services/place_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 
 import '../../../../resources/app_margins_paddings.dart';

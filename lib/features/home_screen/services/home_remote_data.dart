@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/core/network/network_info.dart';
-import 'package:waslny_user/features/home_screen/services/place_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 
 import '../../../sensitive/constants.dart';
 import 'package:http/http.dart' as http;
 
-import 'direction_model.dart';
+import 'models/direction_model.dart';
 
 class HomeRemoteData {
   final NetworkInfo networkInfo;

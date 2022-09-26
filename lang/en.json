@@ -58,6 +58,7 @@
   "endPosition": "Destination",
   "myCurrentLocation": "My current location",
   "myLocation": "My location",
+  "savingTokenError": "Sorry, error while saving token!",
 
 
 

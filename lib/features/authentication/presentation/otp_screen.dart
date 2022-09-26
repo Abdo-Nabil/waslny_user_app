@@ -7,7 +7,6 @@ import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/util/navigator_helper.dart';
 import 'package:waslny_user/core/util/toast_helper.dart';
 import 'package:waslny_user/core/widgets/add_vertical_space.dart';
-import 'package:waslny_user/features/authentication/presentation/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/authentication/presentation/register_screen.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/button.dart';
 import 'package:waslny_user/features/authentication/presentation/widgets/text_row.dart';
@@ -20,6 +19,7 @@ import 'package:waslny_user/resources/image_assets.dart';
 import '../../../core/util/dialog_helper.dart';
 import '../../../resources/app_strings.dart';
 import '../../home_screen/presentation/home_screen.dart';
+import '../cubits/auth_cubit.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;

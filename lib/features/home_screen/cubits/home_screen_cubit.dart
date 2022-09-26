@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
-import 'package:waslny_user/features/home_screen/services/direction_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 
 import '../../../resources/app_strings.dart';
 import '../services/home_local_data.dart';
+import '../services/models/direction_model.dart';
 
 part 'home_screen_state.dart';
 

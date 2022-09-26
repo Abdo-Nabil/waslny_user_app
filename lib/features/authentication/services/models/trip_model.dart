@@ -1,19 +1,48 @@
-import 'package:waslny_user/features/authentication/domain/entities/trip_entity.dart';
+import 'package:equatable/equatable.dart';
 
-class TripModel extends TripEntity {
-  TripModel({
-    required super.tripId,
-    required super.userId,
-    required super.driverId,
-    required super.source,
-    required super.destination,
-    required super.cost,
-    required super.date,
-    required super.time,
-    required super.estimatedTime,
-    required super.pathArray,
-    required super.rating,
+class TripModel extends Equatable {
+  final String tripId;
+  final String userId;
+  final String driverId;
+  final String source;
+  final String destination;
+  final double cost;
+  final String date;
+  final String time;
+  final String estimatedTime;
+  final List pathArray;
+  final double rating;
+
+  const TripModel({
+    required this.tripId,
+    required this.userId,
+    required this.driverId,
+    required this.source,
+    required this.destination,
+    required this.cost,
+    required this.date,
+    required this.time,
+    required this.estimatedTime,
+    required this.pathArray,
+    required this.rating,
   });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        tripId,
+        userId,
+        driverId,
+        source,
+        destination,
+        cost,
+        date,
+        time,
+        estimatedTime,
+        pathArray,
+        rating,
+      ];
+  //
 
   factory TripModel.fromJson(Map<String, dynamic> map) {
     return TripModel(
@@ -30,7 +59,7 @@ class TripModel extends TripEntity {
       rating: map['rating'],
     );
   }
-  //
+
   Map<String, dynamic> toJson() {
     return {
       'tripId': tripId,

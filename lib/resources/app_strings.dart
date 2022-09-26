@@ -40,6 +40,7 @@ class AppStrings {
   static const String ok = 'ok';
   static const String emptyValue = 'emptyValue';
   static const String enterAllDigits = 'enterAllDigits';
+  static const String savingTokenError = 'savingTokenError';
 
   //--------------- FireStore
   static const String usersCollection = 'users';

@@ -1,29 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:waslny_user/core/error/exceptions.dart';
-import 'package:waslny_user/features/authentication/data/models/user_model.dart';
 
-import '../../../../resources/app_strings.dart';
-import '../../../../resources/constants_manager.dart';
+import '../../../core/error/exceptions.dart';
+import '../../../resources/app_strings.dart';
+import '../../../resources/constants_manager.dart';
+import './models/user_model.dart';
 
-abstract class AuthRemoteDataSource {
-  Future<dynamic> loginOrResendSms(String phoneNumber);
-  Future<dynamic> verifySmsCode(String smsCode);
-  Future<Unit> createUser(String userName);
-  Future<UserModel> getUserData(String userId);
-}
-
-class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+class AuthRemoteData {
   String? verificationIdentity;
   late String phone;
   late String userId;
 
   //
-
-  @override
-  Future<dynamic> loginOrResendSms(String phoneNumber) async {
+  Future loginOrResendSms(String phoneNumber) async {
     String temp = AppStrings.countryCode + phoneNumber;
     phone = temp;
     try {
@@ -53,13 +43,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      debugPrint('loginOrResendSms ServerException:: $e');
+      debugPrint('auth remote data loginOrResendSms ServerException:: $e');
       throw ServerException();
     }
   }
 
-  @override
-  Future<dynamic> verifySmsCode(String smsCode) async {
+  Future<UserCredential> verifySmsCode(String smsCode) async {
     PhoneAuthCredential credential;
     if (verificationIdentity == null) {
       throw ServerException();
@@ -76,13 +65,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return userCredential;
     } catch (e) {
-      debugPrint('verifySmsCode InvalidSmsException:: $e');
+      debugPrint('auth remote data verifySmsCode InvalidSmsException:: $e');
       throw InvalidSmsException();
     }
   }
 
-  @override
-  Future<Unit> createUser(String username) async {
+  Future createUser(String username) async {
     final db = FirebaseFirestore.instance;
     final UserModel userModel = UserModel(
       userId: userId,
@@ -91,15 +79,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     );
     try {
       await db.collection(AppStrings.usersCollection).add(userModel.toJson());
-
-      return Future.value(unit);
     } catch (e) {
-      debugPrint('Create user Exception :: $e');
+      debugPrint('auth remote data create user Exception :: $e');
       throw ServerException();
     }
   }
 
-  @override
   Future<UserModel> getUserData(String userId) async {
     final db = FirebaseFirestore.instance;
     try {
@@ -118,13 +103,3 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 }
-
-//
-//
-// debugPrint('donnnnnnnnnnnnnnnne');
-// await Future.delayed(Duration(seconds: 3));
-//
-// //ToDo Remove if NO NEED
-// final temp = await getUserData(userId);
-// debugPrint(temp.name);
-//

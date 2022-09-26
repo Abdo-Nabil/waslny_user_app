@@ -8,10 +8,10 @@ import 'package:waslny_user/features/home_screen/presentation/widgets/map_contai
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_hamb_icon.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_loc_icon.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_yellow_chip.dart';
-import 'package:waslny_user/features/home_screen/services/direction_model.dart';
 
 import '../../../resources/app_strings.dart';
 import '../cubits/home_screen_cubit.dart';
+import '../services/models/direction_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

@@ -1,33 +1,31 @@
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waslny_user/features/authentication/services/auth_local_data.dart';
+import 'package:waslny_user/features/authentication/services/auth_remote_data.dart';
 
-import 'package:waslny_user/core/error/failures.dart';
-import 'package:waslny_user/core/network/network_info.dart';
-import 'package:waslny_user/features/authentication/data/datasources/auth_local_data_source.dart';
+import '../../../core/error/exceptions.dart';
+import '../../../core/error/failures.dart';
+import '../../../core/network/network_info.dart';
+import './models/user_model.dart';
 
-import 'package:waslny_user/features/authentication/domain/entities/user_entity.dart';
-
-import '../../../../core/error/exceptions.dart';
-import '../../domain/repositories/auth_repo.dart';
-import '../datasources/auth_remote_data_source.dart';
-
-class AuthRepoImpl implements AuthRepo {
-  final AuthLocalDataSource authLocalDataSource;
-  final AuthRemoteDataSource authRemoteDataSource;
+class AuthRepo {
   final NetworkInfo networkInfo;
-  AuthRepoImpl({
-    required this.authLocalDataSource,
-    required this.authRemoteDataSource,
+  final AuthRemoteData authRemoteData;
+  final AuthLocalData authLocalData;
+  AuthRepo({
     required this.networkInfo,
+    required this.authRemoteData,
+    required this.authLocalData,
   });
 
-  @override
+  //-------------Auth remote data--------------------
+
   Future<Either<Failure, dynamic>> loginOrResendSms(String phoneNumber) async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
       //
       try {
-        await authRemoteDataSource.loginOrResendSms(phoneNumber);
+        await authRemoteData.loginOrResendSms(phoneNumber);
         return const Right(unit);
       } on ServerException {
         return Left(ServerFailure());
@@ -38,14 +36,13 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-  @override
-  Future<Either<Failure, dynamic>> verifySmsCode(String smsCode) async {
+  Future<Either<Failure, UserCredential>> verifySmsCode(String smsCode) async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
       //
       try {
         final UserCredential userCredential =
-            await authRemoteDataSource.verifySmsCode(smsCode);
+            await authRemoteData.verifySmsCode(smsCode);
         return Right(userCredential);
       } on InvalidSmsException {
         return Left(InvalidSmsFailure());
@@ -58,13 +55,12 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-  @override
   Future<Either<Failure, Unit>> createUser(String userName) async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
       //
       try {
-        await authRemoteDataSource.createUser(userName);
+        await authRemoteData.createUser(userName);
         return Future.value(const Right(unit));
       } on ServerException {
         return Left(ServerFailure());
@@ -75,15 +71,13 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-  @override
-  Future<Either<Failure, UserEntity>> getUserData(String userId) async {
+  Future<Either<Failure, UserModel>> getUserData(String userId) async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
       //
       try {
-        final UserEntity userEntity =
-            await authRemoteDataSource.getUserData(userId);
-        return Right(userEntity);
+        final UserModel userModel = await authRemoteData.getUserData(userId);
+        return Right(userModel);
       } on ServerException {
         return Left(ServerFailure());
       }
@@ -93,16 +87,16 @@ class AuthRepoImpl implements AuthRepo {
     }
   }
 
-  @override
+  //-------------Auth local data--------------------
+
   Either<Failure, String?> getToken() {
-    final String? result = authLocalDataSource.getToken();
+    final String? result = authLocalData.getToken();
     return Right(result);
   }
 
-  @override
   Future<Either<Failure, Unit>> setToken(String token) async {
     try {
-      await authLocalDataSource.setToken(token);
+      await authLocalData.setToken(token);
       return Future.value(const Right(unit));
     } on CacheSavingException {
       return Left(CacheSavingFailure());
