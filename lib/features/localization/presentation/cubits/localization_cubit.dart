@@ -1,29 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
-import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:waslny_user/core/usecases/usecase.dart';
-import 'package:waslny_user/features/localization/domain/usecases/get_locale_use_case.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/local_entity.dart';
-import '../../domain/usecases/set_locale_use_case.dart';
-import '../../domain/usecases/set_to_system_locale.dart';
+import '../../../../resources/app_strings.dart';
+
 import '../../locale/app_localizations_setup.dart';
 
 part 'localization_state.dart';
 
 class LocalizationCubit extends Cubit<LocalizationState> {
-  final GetLocaleUseCase getLocaleUseCase;
-  final SetLocaleUseCase setLocaleUseCase;
-  final SetToSystemLocaleUseCase setToSystemLocaleUseCase;
-
+  final SharedPreferences sharedPreferences;
   LocalizationCubit({
-    required this.getLocaleUseCase,
-    required this.setLocaleUseCase,
-    required this.setToSystemLocaleUseCase,
+    required this.sharedPreferences,
   }) : super(LocalizationInitial());
 
   late Locale selectedLocale;
@@ -33,44 +25,52 @@ class LocalizationCubit extends Cubit<LocalizationState> {
   }
 
   getLocale() {
-    final Either<Failure, LocaleEntity> successOrFailure =
-        getLocaleUseCase(NoParams());
-
-    successOrFailure.fold((failure) {
-      selectedLocale = AppLocalizationsSetup.supportedLocales.first;
-    }, (success) {
-      selectedLocale = success.locale;
-    });
+    final String? jsonString =
+        sharedPreferences.getString(AppStrings.storedLocale);
+    if (jsonString != null) {
+      String decodedJsonData = json.decode(jsonString);
+      selectedLocale = Locale(decodedJsonData);
+    }
+    //
+    else {
+      _setSystemLocaleIfFound(emitState: false);
+    }
   }
 
   Future setToSystemLocale() async {
-    final Either<Failure, LocaleEntity> successOrFailure =
-        await setToSystemLocaleUseCase(NoParams());
-
-    successOrFailure.fold(
-      (failure) {
-        emit(const LocalizationErrorState(errorMsg: "localizationError"));
-      },
-      (success) {
-        selectedLocale = success.locale;
-        emit(LocalizationSuccessState(locale: success.locale));
-      },
+    await sharedPreferences.remove(
+      AppStrings.storedLocale,
     );
+    _setSystemLocaleIfFound(emitState: true);
   }
 
   Future setLocale(Locale locale) async {
-    final Either<Failure, Unit> successOrFailure =
-        await setLocaleUseCase(LocaleEntity(locale: locale));
-
-    successOrFailure.fold(
-      (failure) {
-        emit(const LocalizationErrorState(errorMsg: "localizationError"));
-      },
-      (success) {
-        selectedLocale = locale;
-        emit(LocalizationSuccessState(locale: locale));
-      },
+    await sharedPreferences.setString(
+      AppStrings.storedLocale,
+      json.encode(locale.languageCode),
     );
+
+    selectedLocale = locale;
+    emit(LocalizationSuccessState(locale: locale));
+  }
+
+  //The system (mobile) language
+  Locale _getDeviceLocale() {
+    final String result = Platform.localeName; //like en_US or ar_EG
+    final String localeString = result.split('_').first;
+    return Locale(localeString);
+  }
+
+  void _setSystemLocaleIfFound({required bool emitState}) {
+    final Locale deviceLocal = _getDeviceLocale();
+    Locale systemLocaleOrEnglish =
+        AppLocalizationsSetup.localeResolutionCallback(
+            deviceLocal, AppLocalizationsSetup.supportedLocales);
+    //
+    selectedLocale = systemLocaleOrEnglish;
+    if (emitState) {
+      emit(LocalizationSuccessState(locale: systemLocaleOrEnglish));
+    }
   }
 
   bool isEnglishLocale() {

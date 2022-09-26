@@ -12,22 +12,16 @@ import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/home_screen/services/home_local_data.dart';
 import 'package:waslny_user/features/home_screen/services/home_remote_data.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
-import 'package:waslny_user/features/localization/data/datasources/localization_local_data_source.dart';
-import 'package:waslny_user/features/localization/domain/repositories/localization_repository.dart';
-import 'package:waslny_user/features/localization/domain/usecases/get_locale_use_case.dart';
 
 import 'core/network/network_info.dart';
 import 'features/authentication/domain/usecases/create_user_use_case.dart';
 import 'features/home_screen/cubits/home_screen_cubit.dart';
-import 'features/localization/data/repositories/localization_repository_impl.dart';
-import 'features/localization/domain/usecases/set_locale_use_case.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'features/localization/domain/usecases/set_to_system_locale.dart';
 import 'features/localization/presentation/cubits/localization_cubit.dart';
 import 'features/theme/cubits/theme_cubit.dart';
 
@@ -49,33 +43,13 @@ Future<void> initLocalization() async {
 //! Bloc
 
   sl.registerFactory(() => LocalizationCubit(
-        getLocaleUseCase: sl(),
-        setLocaleUseCase: sl(),
-        setToSystemLocaleUseCase: sl(),
+        sharedPreferences: sl(),
       ));
 
 //! Use Cases
-
-  sl.registerLazySingleton(
-      () => GetLocaleUseCase(localizationRepository: sl()));
-  sl.registerLazySingleton(
-      () => SetLocaleUseCase(localizationRepository: sl()));
-  sl.registerLazySingleton(
-      () => SetToSystemLocaleUseCase(localizationRepository: sl()));
-
 //! Repository
-
-  sl.registerLazySingleton<LocalizationRepository>(
-    () => LocalizationRepositoryImpl(localizationLocalDataSource: sl()),
-  );
-
 //! Data Sources
-
-  sl.registerLazySingleton<LocalizationLocalDataSource>(
-      () => LocalizationLocalDataSourceImpl(sharedPreferences: sl()));
-
 //! Core
-
 //! External
 //
 //   final sharedPreferences = await SharedPreferences.getInstance();
@@ -111,13 +85,9 @@ Future<void> initGeneralCubit() async {
   sl.registerFactory(() => GeneralCubit(sharedPreferences: sl()));
 
 //! Use Cases
-
 //! Repository
-
 //! Data Sources
-
 //! Core
-
 //! External
 }
 
