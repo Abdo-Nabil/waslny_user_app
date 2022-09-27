@@ -24,9 +24,8 @@ class GeneralCubit extends Cubit<GeneralState> {
     }
     //
     else {
-      final String? result =
-          sharedPreferences.getString(AppStrings.storedToken);
-      if (result == null) {
+      final String? token = sharedPreferences.getString(AppStrings.storedToken);
+      if (token == null) {
         selectedScreen = const LoginScreen();
       } else {
         selectedScreen = const HomeScreen();

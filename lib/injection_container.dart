@@ -1,3 +1,5 @@
+import 'package:waslny_user/features/authentication/services/auth_local_data.dart';
+import 'package:waslny_user/features/authentication/services/auth_repo.dart';
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/home_screen/services/home_local_data.dart';
 import 'package:waslny_user/features/home_screen/services/home_remote_data.dart';
@@ -5,6 +7,7 @@ import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 
 import 'core/network/network_info.dart';
 import 'features/authentication/cubits/auth_cubit.dart';
+import 'features/authentication/services/auth_remote_data.dart';
 import 'features/home_screen/cubits/home_screen_cubit.dart';
 
 import 'package:get_it/get_it.dart';
@@ -91,6 +94,15 @@ Future<void> initializeAuth() async {
 
   sl.registerFactory(() => AuthCubit(
         authRepo: sl(),
+      ));
+
+  sl.registerLazySingleton<AuthRemoteData>(() => AuthRemoteData());
+  sl.registerLazySingleton<AuthLocalData>(
+      () => AuthLocalData(sharedPreferences: sl()));
+  sl.registerLazySingleton<AuthRepo>(() => AuthRepo(
+        authRemoteData: sl(),
+        authLocalData: sl(),
+        networkInfo: sl(),
       ));
 
 //! Use Cases
