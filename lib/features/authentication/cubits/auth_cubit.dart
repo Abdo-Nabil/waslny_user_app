@@ -99,7 +99,7 @@ class AuthCubit extends Cubit<AuthState> {
   ///----------------------------------------------------------\\\
 
   handleFailure(Failure failure) {
-    if (failure.runtimeType == InternetConnectionFailure) {
+    if (failure.runtimeType == OfflineFailure) {
       emit(EndLoadingStateWithError(AppStrings.internetConnectionError));
     } else if (failure.runtimeType == ServerFailure) {
       emit(EndLoadingStateWithError(AppStrings.someThingWentWrong));

@@ -7,12 +7,14 @@ import 'package:waslny_user/features/home_screen/services/models/direction_model
 import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_remote_data.dart';
 
+import '../../../core/network/network_info.dart';
 import 'home_local_data.dart';
 
 class HomeRepo {
   final HomeRemoteData homeRemoteData;
   final HomeLocalData homeLocalData;
-  HomeRepo(this.homeRemoteData, this.homeLocalData);
+  final NetworkInfo networkInfo;
+  HomeRepo(this.homeRemoteData, this.homeLocalData, this.networkInfo);
 
   //-----------------Local data source-----------------
 
@@ -52,41 +54,47 @@ class HomeRepo {
   //-----------------Remote data source-----------------
 
   Future<bool> isConnected() async {
-    return await homeRemoteData.isConnected();
+    return await networkInfo.isConnected;
   }
 
   Future<Either<Failure, List<PlaceModel>>> searchForPlace(
       String value, bool isEnglish) async {
-    try {
-      final result = await homeRemoteData.searchForPlace(value, isEnglish);
-      return Right(result);
-    } on ServerException {
-      debugPrint('Home Repo :: searchForPlace :: ServerException :: ');
-      return Left(ServerFailure());
-    } on OfflineException {
-      debugPrint('Home Repo :: searchForPlace :: OfflineException :: ');
+    if (await networkInfo.isConnected) {
+      //
+      try {
+        final result = await homeRemoteData.searchForPlace(value, isEnglish);
+        return Right(result);
+      } on ServerException {
+        debugPrint('Home Repo :: searchForPlace :: ServerException :: ');
+        return Left(ServerFailure());
+      } catch (e) {
+        debugPrint('Home Repo :: searchForPlace Exception :: $e');
+        return Left(ServerFailure());
+      }
+      //
+    } else {
       return Left(OfflineFailure());
-    } catch (e) {
-      debugPrint('Home Repo :: searchForPlace Exception :: $e');
-      return Left(ServerFailure());
     }
   }
 
   Future<Either<Failure, DirectionModel>> getDirections(
       LatLng latLngOrigin, LatLng latLngDestination, bool isEnglish) async {
-    try {
-      final result = await homeRemoteData.getDirections(
-          latLngOrigin, latLngDestination, isEnglish);
-      return Right(result);
-    } on ServerException {
-      debugPrint('Home Repo :: getDirections :: ServerException :: ');
-      return Left(ServerFailure());
-    } on OfflineException {
-      debugPrint('Home Repo :: getDirections :: OfflineException :: ');
+    if (await networkInfo.isConnected) {
+      //
+      try {
+        final result = await homeRemoteData.getDirections(
+            latLngOrigin, latLngDestination, isEnglish);
+        return Right(result);
+      } on ServerException {
+        debugPrint('Home Repo :: getDirections :: ServerException :: ');
+        return Left(ServerFailure());
+      } catch (e) {
+        debugPrint('Home Repo :: getDirections Exception :: $e');
+        return Left(ServerFailure());
+      }
+      //
+    } else {
       return Left(OfflineFailure());
-    } catch (e) {
-      debugPrint('Home Repo :: getDirections Exception :: $e');
-      return Left(ServerFailure());
     }
   }
 

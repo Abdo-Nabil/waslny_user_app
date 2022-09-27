@@ -32,7 +32,7 @@ class AuthRepo {
       }
       //
     } else {
-      return Left(InternetConnectionFailure());
+      return Left(OfflineFailure());
     }
   }
 
@@ -51,7 +51,7 @@ class AuthRepo {
       }
       //
     } else {
-      return Left(InternetConnectionFailure());
+      return Left(OfflineFailure());
     }
   }
 
@@ -67,7 +67,7 @@ class AuthRepo {
       }
       //
     } else {
-      return Left(InternetConnectionFailure());
+      return Left(OfflineFailure());
     }
   }
 
@@ -83,7 +83,7 @@ class AuthRepo {
       }
       //
     } else {
-      return Left(InternetConnectionFailure());
+      return Left(OfflineFailure());
     }
   }
 
