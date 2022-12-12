@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/features/authentication/presentation/login_screen.dart';
+import 'package:waslny_user/features/authentication/presentation/register_screen.dart';
 import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
@@ -58,8 +59,9 @@ class MyApp extends StatelessWidget {
                     AppLocalizationsSetup.localizationsDelegates,
                 // home: const OtpScreen(phoneNumber: '1111522423'),
                 // home: const LoginScreen(),
-                // home: initialScreen,
-                home: const LoginScreen(),
+                home: initialScreen,
+                // home: const HomeScreen(),
+                // home: const RegisterScreen(),
               );
             },
           );

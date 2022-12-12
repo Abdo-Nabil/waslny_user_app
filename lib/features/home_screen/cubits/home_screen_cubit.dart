@@ -201,6 +201,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       },
       (success) {
         directionModel = success;
+
         polyLinePointsList = success.polyLinePoints;
         mapController.animateCamera(CameraUpdate.newLatLngBounds(
             success.bounds, ConstantsManager.mapPadding));

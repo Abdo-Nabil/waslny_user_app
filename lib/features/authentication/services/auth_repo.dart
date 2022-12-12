@@ -6,6 +6,7 @@ import 'package:waslny_user/features/authentication/services/auth_remote_data.da
 import '../../../core/error/exceptions.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/network/network_info.dart';
+import '../../../resources/app_strings.dart';
 import './models/user_model.dart';
 
 class AuthRepo {
@@ -89,14 +90,14 @@ class AuthRepo {
 
   //-------------Auth local data--------------------
 
-  Either<Failure, String?> getToken() {
-    final String? result = authLocalData.getToken();
+  Either<Failure, String?> getString(String key) {
+    final String? result = authLocalData.getString(key);
     return Right(result);
   }
 
-  Future<Either<Failure, Unit>> setToken(String token) async {
+  Future<Either<Failure, Unit>> setString(String key, String value) async {
     try {
-      await authLocalData.setToken(token);
+      await authLocalData.setString(key, value);
       return Future.value(const Right(unit));
     } on CacheSavingException {
       return Left(CacheSavingFailure());

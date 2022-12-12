@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 BlocBuilder<AuthCubit, AuthState>(
                   builder: (context, state) {
                     return Button(
-                      text: AppStrings.register,
+                      text: AppStrings.register.tr(context),
                       onTap: () async {
                         await AuthCubit.getIns(context).register(
                           _formKey,

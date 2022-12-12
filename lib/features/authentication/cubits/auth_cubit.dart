@@ -129,7 +129,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<bool> _saveToken() async {
     final token = await userCred.user?.getIdToken();
     if (token != null) {
-      final either = await authRepo.setToken(token);
+      final either = await authRepo.setString(AppStrings.storedToken, token);
       return either.fold((failure) {
         handleFailure(failure);
         return false;
@@ -153,6 +153,8 @@ class AuthCubit extends Cubit<AuthState> {
         (userCredential) async {
           //
           userCred = userCredential;
+          await authRepo.setString(AppStrings.storedId, userCred.user!.uid);
+          //
           if (userCredential.additionalUserInfo!.isNewUser) {
             emit(EndLoadingToRegisterScreen());
           } else {
@@ -174,6 +176,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
       await Future.delayed(const Duration(seconds: 3));
+      //come here
       final result = await authRepo.createUser(username.text);
       result.fold(
         (failure) {

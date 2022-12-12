@@ -78,7 +78,8 @@ class AuthRemoteData {
       name: username,
     );
     try {
-      await db.collection(AppStrings.usersCollection).add(userModel.toJson());
+      // await db.collection('users').add(userModel.toJson());
+      await db.collection('users').doc(userId).set(userModel.toJson());
     } catch (e) {
       debugPrint('auth remote data create user Exception :: $e');
       throw ServerException();

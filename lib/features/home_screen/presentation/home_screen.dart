@@ -32,8 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     //
+    //make listen:false if you want to remove the yellow container
     final DirectionModel? directionModel =
-        HomeScreenCubit.getIns(context).directionModel;
+        BlocProvider.of<HomeScreenCubit>(context, listen: true).directionModel;
     //
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

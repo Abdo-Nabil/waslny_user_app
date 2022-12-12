@@ -54,6 +54,20 @@ class UserModel extends Equatable {
       'trips': listOfMaps,
     };
   }
+
+  UserModel copyWith({
+    String? userId,
+    String? phoneNumber,
+    String? name,
+    List<TripModel>? trips,
+  }) {
+    return UserModel(
+      userId: userId ?? this.userId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      name: name ?? this.name,
+      trips: trips ?? this.trips,
+    );
+  }
 }
 
 // UserModel({

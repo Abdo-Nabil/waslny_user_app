@@ -218,7 +218,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     textButton: AppStrings.resend,
                     onTap: () async {
                       await AuthCubit.getIns(context)
-                          .loginOrResendSms(_otpController.text);
+                          .loginOrResendSms(widget.phoneNumber);
                     },
                   ),
                 ],
