@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/features/authentication/presentation/login_screen.dart';
 import 'package:waslny_user/features/authentication/presentation/register_screen.dart';
-import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/features/home_screen/cubits/home_screen_cubit.dart';
 import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 
 import 'config/routes/app_routes.dart';
 import 'features/authentication/cubits/auth_cubit.dart';
+import 'features/general/cubits/general_cubit.dart';
 import 'features/home_screen/presentation/home_screen.dart';
 import 'features/localization/locale/app_localizations_setup.dart';
 import 'features/theme/app_theme.dart';

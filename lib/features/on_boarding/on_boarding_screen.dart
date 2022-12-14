@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:waslny_user/core/extensions/context_extension.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
-import 'package:waslny_user/features/general_cubit/general_cubit.dart';
 import 'package:waslny_user/resources/app_margins_paddings.dart';
 
 import '../../config/routes/app_routes.dart';
 import '../../resources/app_strings.dart';
 import '../authentication/presentation/login_screen.dart';
+import '../general/cubits/general_cubit.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);

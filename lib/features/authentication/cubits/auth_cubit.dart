@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/features/general/services/general_repo.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 
 import '../../../../core/error/failures.dart';
@@ -16,9 +17,11 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo authRepo;
+  final GeneralRepo generalRepo;
 
   AuthCubit({
     required this.authRepo,
+    required this.generalRepo,
   }) : super(AuthInitial());
 
   bool showLoginButton = false;

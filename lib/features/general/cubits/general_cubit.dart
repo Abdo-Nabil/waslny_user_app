@@ -3,13 +3,12 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:waslny_user/features/authentication/presentation/login_screen.dart';
-import 'package:waslny_user/features/home_screen/presentation/home_screen.dart';
-import 'package:waslny_user/features/on_boarding/on_boarding_screen.dart';
 
-import '../../resources/app_strings.dart';
-
-part 'general_state.dart';
+import '../../../resources/app_strings.dart';
+import '../../authentication/presentation/login_screen.dart';
+import '../../home_screen/presentation/home_screen.dart';
+import '../../on_boarding/on_boarding_screen.dart';
+import 'general_state.dart';
 
 class GeneralCubit extends Cubit<GeneralState> {
   final SharedPreferences sharedPreferences;
