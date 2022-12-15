@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
+import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
 import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 
 import '../../../sensitive/constants.dart';
@@ -63,6 +65,21 @@ class HomeRemoteData {
     } else {
       debugPrint(
           "Home remote data getDirections Exception :: ${data['status']}");
+      throw ServerException();
+    }
+  }
+
+  Future<List<ActiveCaptainModel>> getActiveCaptains() async {
+    try {
+      List<ActiveCaptainModel> listOfCaptains = [];
+      final db = FirebaseFirestore.instance;
+      final listOfMaps = await db.collection('activeCaptains').get();
+      listOfMaps.docs.map((element) {
+        listOfCaptains.add(ActiveCaptainModel.fromJson(element.data()));
+      }).toList();
+      return listOfCaptains;
+    } catch (e) {
+      debugPrint('HomeRemoteDate :: getActiveCaptains :: $e');
       throw ServerException();
     }
   }

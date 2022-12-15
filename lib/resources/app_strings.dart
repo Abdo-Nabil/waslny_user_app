@@ -64,6 +64,14 @@ class AppStrings {
   static const String endPosition = 'endPosition';
   static const String myCurrentLocation = 'myCurrentLocation';
   static const String myLocation = 'myLocation';
+  static const String noCaptainsAvailable = 'noCaptainsAvailable';
+  static const String readyCaptains = 'readyCaptains';
+  static const String name = 'name';
+  static const String age = 'age';
+  static const String gender = 'gender';
+  static const String car = 'car';
+  static const String plateNumber = 'plateNumber';
+  static const String numOfPassengers = 'numOfPassengers';
 
   //
   //

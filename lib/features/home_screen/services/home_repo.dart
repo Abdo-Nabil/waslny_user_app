@@ -9,6 +9,7 @@ import 'package:waslny_user/features/home_screen/services/home_remote_data.dart'
 
 import '../../../core/network/network_info.dart';
 import 'home_local_data.dart';
+import 'models/active_captain_model.dart';
 
 class HomeRepo {
   final HomeRemoteData homeRemoteData;
@@ -90,6 +91,22 @@ class HomeRepo {
         return Left(ServerFailure());
       } catch (e) {
         debugPrint('Home Repo :: getDirections Exception :: $e');
+        return Left(ServerFailure());
+      }
+      //
+    } else {
+      return Left(OfflineFailure());
+    }
+  }
+
+  Future<Either<Failure, List<ActiveCaptainModel>>> getActiveCaptains() async {
+    if (await networkInfo.isConnected) {
+      //
+      try {
+        final listOfCaptains = await homeRemoteData.getActiveCaptains();
+        return Right(listOfCaptains);
+      } catch (e) {
+        debugPrint('HomeRepo :: getActiveCaptains :: $e');
         return Left(ServerFailure());
       }
       //

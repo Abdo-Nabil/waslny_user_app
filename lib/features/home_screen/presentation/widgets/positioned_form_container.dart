@@ -67,6 +67,9 @@ class _PositionedFormContainerState extends State<PositionedFormContainer> {
                       readOnly: true,
                       iconWidget: const Icon(Icons.add_location_alt_outlined),
                       controller: _fromController,
+                      validate: (value) {
+                        return validateFields(value);
+                      },
                       onTap: () {
                         HomeScreenCubit.getIns(context).fromController =
                             _fromController;
@@ -88,6 +91,9 @@ class _PositionedFormContainerState extends State<PositionedFormContainer> {
                       label: AppStrings.whereToGo,
                       iconWidget: const Icon(Icons.add_location_alt_outlined),
                       controller: _toController,
+                      validate: (value) {
+                        return validateFields(value);
+                      },
                       onTap: () {
                         HomeScreenCubit.getIns(context).toController =
                             _toController;
@@ -119,5 +125,13 @@ class _PositionedFormContainerState extends State<PositionedFormContainer> {
         ),
       ),
     );
+  }
+
+  validateFields(String value) {
+    if (value.isEmpty) {
+      return AppStrings.emptyValue.tr(context);
+    } else {
+      return null;
+    }
   }
 }

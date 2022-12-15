@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/util/dialog_helper.dart';
+import 'package:waslny_user/core/util/navigator_helper.dart';
+import 'package:waslny_user/features/home_screen/presentation/captains_screen.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_form_container.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/map_container.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_hamb_icon.dart';
@@ -89,6 +91,17 @@ class _HomeScreenState extends State<HomeScreen> {
           //
           else if (state is HomeSuccessWithPopState) {
             Navigator.pop(context);
+          }
+          //
+          else if (state is NoCaptainsAvailable) {
+            Navigator.pop(context);
+            DialogHelper.messageDialog(
+                context, AppStrings.noCaptainsAvailable.tr(context));
+          }
+          //
+          else if (state is EndLoadingToCaptainsScreen) {
+            Navigator.pop(context);
+            NavigatorHelper.push(context, const CaptainsScreen());
           }
           //
         },

@@ -70,6 +70,16 @@ class OpenLocationSettingState extends HomeScreenState {
   List<Object> get props => [identityHashCode(this)];
 }
 
+class NoCaptainsAvailable extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}
+
+class EndLoadingToCaptainsScreen extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}
+
 //Location screen states
 //
 

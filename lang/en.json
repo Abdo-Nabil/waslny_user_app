@@ -59,6 +59,19 @@
   "myCurrentLocation": "My current location",
   "myLocation": "My location",
   "savingTokenError": "Sorry, error while saving token!",
+  "noCaptainsAvailable": "No captains available!",
+  "readyCaptains": "Ready captains",
+  "name": "Name",
+  "age": "Age",
+  "gender": "Gender",
+  "car": "Car",
+  "plateNumber": "Plate number",
+  "numOfPassengers": "Number of passengers",
+
+  "male": "male",
+  "female": "female",
+  "ذكر": "male",
+  "انثى": "female",
 
 
 

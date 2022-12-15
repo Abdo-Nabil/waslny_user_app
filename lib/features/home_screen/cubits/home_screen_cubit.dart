@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/features/authentication/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
+import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 
@@ -34,6 +36,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   late BitmapDescriptor markerCustomIcon;
   TextEditingController? toController;
   TextEditingController? fromController;
+  List<ActiveCaptainModel> readyCaptains = [];
 
   getIsOrigin() {
     return _isOrigin;
@@ -277,9 +280,28 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
 
   void requestCar(GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
-      //
-      //request  car
+      final either = await homeRepo.getActiveCaptains();
+      either.fold(
+        (failure) {
+          //failure
+        },
+        (success) async {
+          emit(HomeLoadingState());
+          await Future.delayed(const Duration(seconds: 3));
+          final filteredCaptains = filterCaptains(success);
+          if (filteredCaptains.length == 0) {
+            emit(NoCaptainsAvailable());
+          } else {
+            readyCaptains = filteredCaptains;
+            emit(EndLoadingToCaptainsScreen());
+          }
+        },
+      );
     }
+  }
+
+  filterCaptains(List<ActiveCaptainModel> list) {
+    return list;
   }
 
   static const LatLng cairoLatLng = LatLng(
