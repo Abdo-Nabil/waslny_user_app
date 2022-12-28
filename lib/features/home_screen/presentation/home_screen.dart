@@ -1,9 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/core/util/dialog_helper.dart';
 import 'package:waslny_user/core/util/navigator_helper.dart';
+import 'package:waslny_user/features/authentication/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/home_screen/presentation/captains_screen.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/positioned_form_container.dart';
 import 'package:waslny_user/features/home_screen/presentation/widgets/map_container.dart';
@@ -27,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     HomeScreenCubit.getIns(context).getMyLocationStream();
+    AuthCubit.getIns(context).getUserData();
+    initFirebaseMessaging();
     super.initState();
   }
 
@@ -126,5 +130,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  initFirebaseMessaging() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // request permissions
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    debugPrint('User granted permission:::::: ${settings.authorizationStatus}');
   }
 }

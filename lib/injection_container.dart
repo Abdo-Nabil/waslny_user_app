@@ -135,7 +135,7 @@ Future<void> initializeAuth() async {
 }
 
 Future<void> initHomeScreen() async {
-  sl.registerFactory(() => HomeScreenCubit(sl()));
+  sl.registerFactory(() => HomeScreenCubit(sl(), sl()));
 
   sl.registerLazySingleton<HomeRemoteData>(() => HomeRemoteData(client: sl()));
   sl.registerLazySingleton<HomeLocalData>(() => HomeLocalData());

@@ -55,6 +55,7 @@ class SelectLocationScreen extends StatelessWidget {
                   builder: (context, state) {
                     if (state is SearchPlaceSuccessState) {
                       if (state.places.isEmpty) {
+                        _clearController(controller);
                         return _myLocationAndWidget(
                           context,
                           myCurrentLocationPlaceItem,
@@ -97,6 +98,7 @@ class SelectLocationScreen extends StatelessWidget {
 
                     //
                     else if (state is SearchPlaceServerFailureState) {
+                      _clearController(controller);
                       return Expanded(
                         child: NoXWidget(
                           msg: AppStrings.someThingWentWrong.tr(context),
@@ -106,6 +108,7 @@ class SelectLocationScreen extends StatelessWidget {
                     }
                     //
                     else if (state is SearchPlaceConnectionFailureState) {
+                      _clearController(controller);
                       return Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(AppPadding.p30),
@@ -150,6 +153,10 @@ class SelectLocationScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+_clearController(TextEditingController controller) {
+  controller.clear();
 }
 
 _myLocationAndWidget(

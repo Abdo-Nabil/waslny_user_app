@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/error/exceptions.dart';
@@ -10,7 +11,7 @@ import './models/user_model.dart';
 class AuthRemoteData {
   String? verificationIdentity;
   late String phone;
-  late String userId;
+  String? userId;
 
   //
   Future loginOrResendSms(String phoneNumber) async {
@@ -73,7 +74,7 @@ class AuthRemoteData {
   Future createUser(String username) async {
     final db = FirebaseFirestore.instance;
     final UserModel userModel = UserModel(
-      userId: userId,
+      userId: userId!,
       phoneNumber: phone,
       name: username,
     );
@@ -86,8 +87,9 @@ class AuthRemoteData {
     }
   }
 
-  Future<UserModel> getUserData(String userId) async {
+  Future<UserModel> getUserData() async {
     final db = FirebaseFirestore.instance;
+    userId ??= FirebaseAuth.instance.currentUser?.uid;
     try {
       final jsonData = await db.collection(AppStrings.usersCollection).get();
       for (var doc in jsonData.docs) {

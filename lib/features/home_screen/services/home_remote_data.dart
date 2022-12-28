@@ -4,11 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/active_user_model.dart';
 import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 
 import '../../../sensitive/constants.dart';
 import 'package:http/http.dart' as http;
 
+import '../../authentication/services/models/user_model.dart';
 import 'models/direction_model.dart';
 
 class HomeRemoteData {
@@ -80,6 +82,65 @@ class HomeRemoteData {
       return listOfCaptains;
     } catch (e) {
       debugPrint('HomeRemoteDate :: getActiveCaptains :: $e');
+      throw ServerException();
+    }
+  }
+
+  Future<String> convertLatLngToAddress(double lat, double lng) async {
+    //
+    String url =
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapsApiKey';
+    final response = await client.get(Uri.parse(url));
+    final data = json.decode(response.body);
+    if (data['status'] == 'OK') {
+      if (data['results'].length == 0) {
+        throw ServerException();
+      }
+      return data['results'][0]['formatted_address'];
+    } else {
+      debugPrint(
+          "Home remote data convertLatLngToAddress Exception :: ${data['status']}");
+      throw ServerException();
+    }
+  }
+
+  Future selectCaptain(
+      ActiveCaptainModel captain, ActiveUserModel activeUserModel) async {
+    final response = await client.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'content-Type': 'application/json',
+        'Authorization': 'key=$fcmServerKey',
+      },
+      body: jsonEncode(
+        {
+          'to': captain.deviceToken,
+          'priority': 'high',
+          'notification': {
+            'title': 'Are you ready? ',
+            'body': 'A new customer is waiting your response!',
+          },
+          'data': {
+            'userId': activeUserModel.userModel.userId,
+            'name': activeUserModel.userModel.name,
+            'phoneNumber': activeUserModel.userModel.phoneNumber,
+            'userDeviceToken': activeUserModel.userDeviceToken,
+            'origin': activeUserModel.origin,
+            'destination': activeUserModel.destination,
+            'latLngOrigin': {
+              'lat': activeUserModel.latLngOrigin.latitude,
+              'lng': activeUserModel.latLngOrigin.longitude,
+            },
+            'latLngDestination': {
+              'lat': activeUserModel.latLngDestination.latitude,
+              'lng': activeUserModel.latLngDestination.longitude,
+            }
+          }
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
       throw ServerException();
     }
   }

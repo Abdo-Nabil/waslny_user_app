@@ -72,12 +72,12 @@ class AuthRepo {
     }
   }
 
-  Future<Either<Failure, UserModel>> getUserData(String userId) async {
+  Future<Either<Failure, UserModel>> getUserData() async {
     final bool isConnected = await networkInfo.isConnected;
     if (isConnected) {
       //
       try {
-        final UserModel userModel = await authRemoteData.getUserData(userId);
+        final UserModel userModel = await authRemoteData.getUserData();
         return Right(userModel);
       } on ServerException {
         return Left(ServerFailure());
@@ -90,17 +90,17 @@ class AuthRepo {
 
   //-------------Auth local data--------------------
 
-  Either<Failure, String?> getString(String key) {
-    final String? result = authLocalData.getString(key);
-    return Right(result);
-  }
-
-  Future<Either<Failure, Unit>> setString(String key, String value) async {
-    try {
-      await authLocalData.setString(key, value);
-      return Future.value(const Right(unit));
-    } on CacheSavingException {
-      return Left(CacheSavingFailure());
-    }
-  }
+  // Either<Failure, String?> getString(String key) {
+  //   final String? result = authLocalData.getString(key);
+  //   return Right(result);
+  // }
+  //
+  // Future<Either<Failure, Unit>> setString(String key, String value) async {
+  //   try {
+  //     await authLocalData.setString(key, value);
+  //     return Future.value(const Right(unit));
+  //   } on CacheSavingException {
+  //     return Left(CacheSavingFailure());
+  //   }
+  // }
 }

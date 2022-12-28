@@ -6,12 +6,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
 import 'package:waslny_user/features/authentication/cubits/auth_cubit.dart';
+import 'package:waslny_user/features/authentication/services/models/user_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/active_user_model.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 
 import '../../../resources/app_strings.dart';
+import '../../general/services/general_repo.dart';
 import '../services/home_local_data.dart';
 import '../services/models/direction_model.dart';
 
@@ -19,7 +22,8 @@ part 'home_screen_state.dart';
 
 class HomeScreenCubit extends Cubit<HomeScreenState> {
   final HomeRepo homeRepo;
-  HomeScreenCubit(this.homeRepo) : super(HomeScreenInitial());
+  final GeneralRepo generalRepo;
+  HomeScreenCubit(this.homeRepo, this.generalRepo) : super(HomeScreenInitial());
 
   LatLng? myInitialLatLng;
   late LatLng myCurrentLatLng;
@@ -278,15 +282,28 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   }
   //
 
+  Future<String?> _convertLatLngToAddress(double lat, double lng) async {
+    final either = await homeRepo.convertLatLngToAddress(lat, lng);
+    return either.fold(
+      (l) {
+        debugPrint('Error while converting from LatLng to address');
+        return null;
+      },
+      (r) {
+        return r;
+      },
+    );
+  }
+
   void requestCar(GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
+      emit(HomeLoadingState());
       final either = await homeRepo.getActiveCaptains();
       either.fold(
         (failure) {
-          //failure
+          emit(HomeServerFailureWithPopState());
         },
         (success) async {
-          emit(HomeLoadingState());
           await Future.delayed(const Duration(seconds: 3));
           final filteredCaptains = filterCaptains(success);
           if (filteredCaptains.length == 0) {
@@ -298,6 +315,43 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         },
       );
     }
+  }
+
+  selectCaptain(
+    BuildContext context,
+    ActiveCaptainModel captain,
+  ) async {
+    emit(HomeLoadingState());
+    //
+    String? originString = fromController?.text;
+    if (fromController?.text == AppStrings.myCurrentLocation.tr(context)) {
+      originString =
+          await _convertLatLngToAddress(origin.latitude, origin.longitude);
+      if (originString == null) {
+        emit(HomeServerFailureWithPopState());
+        return;
+      }
+    }
+    //
+    final activeUserModel = ActiveUserModel(
+      userModel: AuthCubit.getIns(context).userData,
+      userDeviceToken: generalRepo.getString(AppStrings.fcmToken)!,
+      origin: originString!,
+      destination: toController!.text,
+      latLngOrigin: origin,
+      latLngDestination: destination,
+    );
+    //
+    final either = await homeRepo.selectCaptain(captain, activeUserModel);
+    either.fold(
+      (failure) {
+        emit(HomeServerFailureWithPopState());
+      },
+      (success) {
+        //waiting while accepting or refusing
+        emit(HomeSuccessWithPopState());
+      },
+    );
   }
 
   filterCaptains(List<ActiveCaptainModel> list) {

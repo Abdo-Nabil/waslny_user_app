@@ -1,11 +1,13 @@
 import 'package:alt_sms_autofill/alt_sms_autofill.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/features/authentication/services/models/user_model.dart';
 import 'package:waslny_user/features/general/services/general_repo.dart';
 import 'package:waslny_user/resources/app_strings.dart';
 
@@ -28,6 +30,7 @@ class AuthCubit extends Cubit<AuthState> {
   bool showResendButton = false;
   //
   late final UserCredential userCred;
+  late final UserModel userData;
 
   static AuthCubit getIns(context) {
     return BlocProvider.of<AuthCubit>(context);
@@ -129,22 +132,6 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  Future<bool> _saveToken() async {
-    final token = await userCred.user?.getIdToken();
-    if (token != null) {
-      final either = await authRepo.setString(AppStrings.storedToken, token);
-      return either.fold((failure) {
-        handleFailure(failure);
-        return false;
-      }, (success) {
-        return true;
-      });
-    } else {
-      debugPrint('The token is nullllllllllll!');
-      return false;
-    }
-  }
-
   Future verifySmsCode(String smsCode, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
       emit(StartLoadingState());
@@ -156,15 +143,12 @@ class AuthCubit extends Cubit<AuthState> {
         (userCredential) async {
           //
           userCred = userCredential;
-          await authRepo.setString(AppStrings.storedId, userCred.user!.uid);
+          await generalRepo.setString(AppStrings.storedId, userCred.user!.uid);
           //
           if (userCredential.additionalUserInfo!.isNewUser) {
             emit(EndLoadingToRegisterScreen());
           } else {
-            final isSaved = await _saveToken();
-            if (isSaved) {
-              emit(EndLoadingToHomeScreen());
-            }
+            await _afterBeingLogged();
           }
         },
       );
@@ -186,25 +170,60 @@ class AuthCubit extends Cubit<AuthState> {
           handleFailure(failure);
         },
         (success) async {
-          final isSaved = await _saveToken();
-          if (isSaved) {
-            emit(EndLoadingToHomeScreen());
-          }
+          await _afterBeingLogged();
         },
       );
     }
   }
 
-  // Future getUserData(String userId) async {
-  //     final result = await getUserDataUseCase.call(userId);
-  //     result.fold(
-  //       (failure) {
-  //         handleFailure(failure);
-  //       },
-  //       (success) async {
-  //         emit(EndLoadingToHomeScreen());
-  //       },
-  //     );
-  //   }
+  _afterBeingLogged() async {
+    final isSaved1 = await _saveToken();
+    final isSaved2 = await _saveFcmToken();
 
+    if (isSaved1 && isSaved2) {
+      emit(EndLoadingToHomeScreen());
+    } else {
+      emit(EndLoadingStateWithError(AppStrings.someThingWentWrong));
+    }
+  }
+
+  Future<bool> _saveToken() async {
+    final token = await userCred.user?.getIdToken();
+    if (token != null) {
+      final either = await generalRepo.setString(AppStrings.storedToken, token);
+      return either.fold((failure) {
+        handleFailure(failure);
+        return false;
+      }, (success) {
+        return true;
+      });
+    } else {
+      debugPrint('The token is nullllllllllll!');
+      return false;
+    }
+  }
+
+  Future<bool> _saveFcmToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    debugPrint('FCM token !!!!!!  $fcmToken');
+    if (fcmToken != null) {
+      await generalRepo.setString(AppStrings.fcmToken, fcmToken);
+      return true;
+    } else {
+      return false;
+    }
+    // generalRepo.
+  }
+
+  Future getUserData() async {
+    final result = await authRepo.getUserData();
+    result.fold(
+      (failure) {
+        // handleFailure(failure);
+      },
+      (success) async {
+        userData = success;
+      },
+    );
+  }
 }
