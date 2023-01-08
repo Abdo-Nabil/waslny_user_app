@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/exceptions.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_user_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/message_type.dart';
 import 'package:waslny_user/features/home_screen/services/models/place_model.dart';
 
 import '../../../sensitive/constants.dart';
@@ -121,6 +122,7 @@ class HomeRemoteData {
             'body': 'A new customer is waiting your response!',
           },
           'data': {
+            'messageType': MessageType.captainToUserFirstRequest.name,
             'userId': activeUserModel.userModel.userId,
             'name': activeUserModel.userModel.name,
             'phoneNumber': activeUserModel.userModel.phoneNumber,
