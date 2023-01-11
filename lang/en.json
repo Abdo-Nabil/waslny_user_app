@@ -73,6 +73,10 @@
   "ذكر": "male",
   "انثى": "female",
 
+  "captainRejectTrip": "Sorry, the captain didn't accept the request!",
+  "waiting": "Waiting for captain response",
+  "captainNotResponding": "Sorry, Captain is not responding!",
+
 
 
 

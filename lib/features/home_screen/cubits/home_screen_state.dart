@@ -104,3 +104,8 @@ class SearchPlaceServerFailureState extends HomeScreenState {
   @override
   List<Object> get props => [];
 }
+
+class HomeLoadingWithTimerState extends HomeScreenState {
+  @override
+  List<Object> get props => [];
+}

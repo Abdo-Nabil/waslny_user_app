@@ -73,6 +73,9 @@ class AppStrings {
   static const String car = 'car';
   static const String plateNumber = 'plateNumber';
   static const String numOfPassengers = 'numOfPassengers';
+  static const String captainRejectTrip = 'captainRejectTrip';
+  static const String waiting = 'waiting';
+  static const String captainNotResponding = 'captainNotResponding';
 
   //
   //

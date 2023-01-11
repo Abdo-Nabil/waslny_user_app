@@ -1,15 +1,22 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waslny_user/core/error/failures.dart';
 import 'package:waslny_user/core/extensions/string_extension.dart';
+import 'package:waslny_user/core/util/dialog_helper.dart';
 import 'package:waslny_user/features/authentication/cubits/auth_cubit.dart';
 import 'package:waslny_user/features/authentication/services/models/user_model.dart';
 import 'package:waslny_user/features/home_screen/services/home_repo.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_captain_model.dart';
 import 'package:waslny_user/features/home_screen/services/models/active_user_model.dart';
+import 'package:waslny_user/features/home_screen/services/models/message_type.dart';
+import 'package:waslny_user/features/localization/presentation/cubits/localization_cubit.dart';
 import 'package:waslny_user/resources/constants_manager.dart';
 import 'package:waslny_user/resources/image_assets.dart';
 
@@ -31,17 +38,24 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   late bool _isOrigin;
   late GoogleMapController mapController;
   Set<Marker> markers = {};
-  List<LatLng> polyLinePointsList = [];
+  List<LatLng> polyLinePointsList1 = [];
+  List<LatLng> polyLinePointsList2 = [];
   late LatLng origin;
   late LatLng destination;
   Marker? originMarker;
   Marker? destinationMarker;
-  DirectionModel? directionModel;
+  DirectionModel? directionModel1;
+  DirectionModel? directionModel2;
   late BitmapDescriptor markerCustomIcon;
   TextEditingController? toController;
   TextEditingController? fromController;
   List<ActiveCaptainModel> readyCaptains = [];
+  late RemoteMessage message1;
+  late RemoteMessage message2;
+  late LatLng captainCurrentLatLng;
+  bool waitingForCaptainResponseFlag = true;
 
+  //
   getIsOrigin() {
     return _isOrigin;
   }
@@ -139,7 +153,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
       //
       originMarker != null ? markers.remove(originMarker) : () {};
       destinationMarker != null ? markers.remove(destinationMarker) : () {};
-      polyLinePointsList.clear();
+      polyLinePointsList2.clear();
       //
       originMarker = Marker(
         markerId: const MarkerId('origin'),
@@ -192,7 +206,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     }
   }
 
-  Future getDirections(BuildContext context, bool isEnglish) async {
+  Future getDestinationDirections(BuildContext context, bool isEnglish) async {
     //
     emit(HomeLoadingState());
     await Future.delayed(const Duration(seconds: 3));
@@ -207,9 +221,8 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         }
       },
       (success) {
-        directionModel = success;
-
-        polyLinePointsList = success.polyLinePoints;
+        directionModel2 = success;
+        polyLinePointsList2 = success.polyLinePoints;
         mapController.animateCamera(CameraUpdate.newLatLngBounds(
             success.bounds, ConstantsManager.mapPadding));
         emit(HomeSuccessWithPopState());
@@ -321,7 +334,8 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     BuildContext context,
     ActiveCaptainModel captain,
   ) async {
-    emit(HomeLoadingState());
+    emit(HomeLoadingWithTimerState());
+    waitingForCaptainResponseFlag = true;
     //
     String? originString = fromController?.text;
     if (fromController?.text == AppStrings.myCurrentLocation.tr(context)) {
@@ -348,14 +362,70 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
         emit(HomeServerFailureWithPopState());
       },
       (success) {
-        //waiting while accepting or refusing
-        emit(HomeSuccessWithPopState());
+        emit(HomeScreenInitial());
+        manageTheTimer(context);
       },
     );
   }
 
+  manageTheTimer(BuildContext context) {
+    Timer(
+        const Duration(
+            seconds: ConstantsManager.userAndCaptainRequestTimeDuration + 5),
+        () {
+      if (waitingForCaptainResponseFlag) {
+        Navigator.pop(context);
+        DialogHelper.messageDialog(
+            context, AppStrings.captainNotResponding.tr(context));
+      }
+    });
+  }
+
   filterCaptains(List<ActiveCaptainModel> list) {
     return list;
+  }
+
+  Future _getCaptainPath(BuildContext context, bool isEnglish) async {
+    //
+    emit(HomeLoadingState());
+    await Future.delayed(const Duration(seconds: 3));
+
+    final either =
+        await homeRepo.getDirections(captainCurrentLatLng, origin, isEnglish);
+    either.fold(
+      (failure) {
+        if (failure.runtimeType == ServerFailure) {
+          emit(HomeServerFailureWithPopState());
+        } else if (failure.runtimeType == OfflineFailure) {
+          emit(HomeConnectionFailureWithPopState());
+        }
+      },
+      (success) {
+        directionModel1 = success;
+        polyLinePointsList1 = success.polyLinePoints;
+        mapController.animateCamera(CameraUpdate.newLatLngBounds(
+            success.bounds, ConstantsManager.mapPadding));
+        emit(HomeSuccessWithPopState());
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  handleMessage(RemoteMessage message, BuildContext context) async {
+    if (waitingForCaptainResponseFlag) {
+      waitingForCaptainResponseFlag = false;
+      Navigator.pop(context);
+    }
+    //
+    if (message.data['messageType'] == MessageType.confirm.name) {
+      final temp1 = jsonDecode(message.data['captainCurrentLocation']);
+      captainCurrentLatLng = LatLng(temp1['lat'], temp1['lng']);
+      _getCaptainPath(
+          context, LocalizationCubit.getIns(context).isEnglishLocale());
+    } else if (message.data['messageType'] == MessageType.reject.name) {
+      DialogHelper.messageDialogWithDoublePop(
+          context, AppStrings.captainRejectTrip.tr(context));
+    }
   }
 
   static const LatLng cairoLatLng = LatLng(

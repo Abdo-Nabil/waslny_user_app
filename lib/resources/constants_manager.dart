@@ -10,4 +10,5 @@ class ConstantsManager {
   static const int searchDelay = 2000;
   static const int locationTimeLimit = 10;
   static const int minDistanceToUpdate = 5;
+  static const int userAndCaptainRequestTimeDuration = 15;
 }
