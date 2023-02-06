@@ -17,7 +17,7 @@
 
 ## ⚡&ensp;Topics
 
-*  Authentication process using a phone number with SMS message verification.
+*  Authentication process using a phone number with SMS verification message.
 
 * Working with Google maps APIs ( Directions API, Distance Matrix API, Geocoding API, Places API ).
 
