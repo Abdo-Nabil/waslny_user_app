@@ -1,16 +1,58 @@
 # waslny_user_app
 
-A new Flutter project.
+<!-- vertical space &nbsp; -->
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## waslny_user is a flutter application based on firebase and google maps that delivers users to places they request.
 
-A few resources to get you started if this is your first Flutter project:
+&nbsp;
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### It is a perfect example for dealing with some topics that may be rare on the internet and it really saves your time and effort.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+&nbsp;
+
+### You can get the Captain app from [Here](https://github.com/Abdo-Nabil/waslny_captain_app).
+
+&nbsp;
+
+## ⚡&ensp;Topics
+
+*  Authentication process using a phone number with SMS message verification.
+
+* Working with Google maps APIs ( Directions API, Distance Matrix API, Geocoding API, Places API ).
+
+* Flutter Google Maps, Polylines, Markers, Custom Markers.
+
+* Live tracking for the current location.
+
+* Dealing with firebase, firestore and cloud messaging for notification purposes.
+
+* Get notifications on time.
+
+* Full Localization (Arabic & English)
+
+
+---
+
+## ☎️&ensp;abdo.sw.eng@gmail.com
+
+## ✌ Preview
+
+ <img src=screenshots/image1.png  width="250" height = "500"/> &ensp;   <img src=screenshots/image2.png  width="250" height = "500"/> &ensp; <img src=screenshots/image3.png  width="250" height = "500"/> &ensp; <img src=screenshots/image4.png  width="250" height = "500"/> &ensp; 
+ <img src=screenshots/image5.png  width="250" height = "500"/> &ensp;   <img src=screenshots/image6.png  width="250" height = "500"/> &ensp; <img src=screenshots/image7.png  width="250" height = "500"/> &ensp; <img src=screenshots/image8.png  width="250" height = "500"/> &ensp; 
+ <img src=screenshots/image9.png  width="250" height = "500"/> &ensp;   <img src=screenshots/image10.png  width="250" height = "500"/> &ensp; <img src=screenshots/image11.png  width="250" height = "500"/> &ensp; <img src=screenshots/image12.png  width="250" height = "500"/> &ensp; 
+ <img src=screenshots/image13.png  width="250" height = "500"/>
+ 
+
+## ⚡&ensp;Notes
+* The app currently isn't completed yet, but the main goals for making an app like this are done and covered by the mentioned topics above.
+
+* Maybe in the future, I can invest more time to finish the app.
+
+* To use this project on your machine, you need to set up firebase for this project.
+
+* You need also to have mapsApiKey for Maps SDk & fcmServerKey for notifications.
+
+* Put the mapsApiKey & fcmServerKey constants in a file called 'constants.dart' or deal as you like.
+
+
